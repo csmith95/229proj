@@ -5,6 +5,7 @@ from sklearn.metrics import mean_squared_error
 import argparse
 from sklearn.cluster import KMeans
 from tabulate import tabulate
+import hypertools as hype
 
 
 # execution starts here
@@ -28,6 +29,11 @@ if __name__ == '__main__':
 		print("Mean squared error: %.2f" % mean_squared_error(y_test, y_pred))
 	elif args.model == 'kmeans':
 		X, input_variables = dataParser.get_input_vars(input_vars=['Act'])
+		# this line does separate KMeans clustering than what sklearn does below this
+		# this is just an example of how to use the hype graphing lib
+		graph = hype.plot(X, '.', n_clusters=8, legend=True, show=False) # plot clusters
+
+		# KMeans using sklearn
 		model = KMeans(n_clusters=args.n_clusters).fit(X)
 		centers_list = model.cluster_centers_.tolist()
 		center_values = [ [c[i] for c in centers_list] for i in range(len(input_variables))]
