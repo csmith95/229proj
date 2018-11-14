@@ -1,0 +1,291 @@
+"Variable / Field Name","Form Name","Section Header","Field Type","Field Label","Choices, Calculations, OR Slider Labels","Field Note","Text Validation Type OR Show Slider Number","Text Validation Min","Text Validation Max",Identifier?,"Branching Logic (Show field only if...)","Required Field?","Custom Alignment","Question Number (surveys only)","Matrix Group Name","Matrix Ranking?","Field Annotation"
+record_id,pearls_baseline_questionnaire,,text,"Record ID",,,,,,,,,,,,,
+intake_today_date,pearls_baseline_questionnaire,,text,"Today's date:
+",,,date_mdy,,,,,y,,,,,
+intake_study_id,pearls_baseline_questionnaire,,text,"Study ID #
+",,,,,,y,,y,,,,,
+intake_phq9_1,pearls_baseline_questionnaire,"Ask the participant: ""Over the <i><b><u>LAST TWO WEEKS,</u> how often have you been bothered by any of the following?""</i></b> ",radio,"Little interest or pleasure in doing things","0, Not at all | 1, Several Days | 2, More than half the days | 3, Nearly every day",,,,,,,y,,,pearl_phq9,,
+intake_phq9_2,pearls_baseline_questionnaire,,radio,"Feeling down, sad, or hopeless.","0, Not at all | 1, Several Days | 2, More than half the days | 3, Nearly every day",,,,,,,y,,,pearl_phq9,,
+intake_phq9_3,pearls_baseline_questionnaire,,radio,"Trouble falling asleep, staying asleep, or sleeping too much.","0, Not at all | 1, Several Days | 2, More than half the days | 3, Nearly every day",,,,,,,y,,,pearl_phq9,,
+intake_phq9_4,pearls_baseline_questionnaire,,radio,"Feeling tired or having little energy.","0, Not at all | 1, Several Days | 2, More than half the days | 3, Nearly every day",,,,,,,y,,,pearl_phq9,,
+intake_phq9_5,pearls_baseline_questionnaire,,radio,"Poor appetite or overeating.","0, Not at all | 1, Several Days | 2, More than half the days | 3, Nearly every day",,,,,,,y,,,pearl_phq9,,
+intake_phq9_6,pearls_baseline_questionnaire,,radio,"Feeling bad about yourself - or that you are a failure or have let yourself or your family down","0, Not at all | 1, Several Days | 2, More than half the days | 3, Nearly every day",,,,,,,y,,,pearl_phq9,,
+intake_phq9_7,pearls_baseline_questionnaire,,radio,"Trouble concentrating on things, such as reading the newspaper or watching television.","0, Not at all | 1, Several Days | 2, More than half the days | 3, Nearly every day",,,,,,,y,,,pearl_phq9,,
+intake_phq9_8,pearls_baseline_questionnaire,,radio,"Moving or speaking so slowly that other people could have noticed. Or the opposite - being so fidgety or restless that you have been moving around a lot more than usual.","0, Not at all | 1, Several Days | 2, More than half the days | 3, Nearly every day",,,,,,,y,,,pearl_phq9,,
+intake_phq9_9,pearls_baseline_questionnaire,,radio,"Thoughts that you would be better off dead or of hurting yourself in some way","0, Not at all | 1, Several Days | 2, More than half the days | 3, Nearly every day",,,,,,,y,,,pearl_phq9,,
+intake_phq9_score,pearls_baseline_questionnaire,,calc,"I-CARE Baseline PHQ9 score:
+",[intake_phq9_1]+[intake_phq9_2]+[intake_phq9_3]+[intake_phq9_4]+[intake_phq9_5]+[intake_phq9_6]+[intake_phq9_7]+[intake_phq9_8]+[intake_phq9_9],,,,,,,y,,,,,
+intake_2_instruct,pearls_baseline_questionnaire,,descriptive,"""<b>Minor depression</b>= Two to four symptoms with a score of 2 or 3 (shaded areas), with at least one of the symptoms being a cardinal (""""hallmark"""") symptom (Question 1 or 2)
+<b>Major depression</b> = Five or more symptoms with a score of 2 or 3 (shaded areas), with at least one of the symptoms being a cardinal (""""hallmark"""") symptom (Question 1 or 2)""
+",,,,,,,,,,,,,
+current_tx,pearls_baseline_questionnaire,"Ask the participant the following questions and check the answer provided. 
+
+<b><u>Psychological Treatment</b></u>
+",descriptive,"
+<font color=blue><font size =3><center>Current Treatment</font>",,,,,,,,,,,,,
+intake_2_current_tx_yn,pearls_baseline_questionnaire,,radio,"Are you currently being treated for depression or other emotional problems?
+","1, Yes | 2, No | 3, Don't know | 4, N/A",,,,,,,y,,,,,
+intake_2a_date,pearls_baseline_questionnaire,,text,"If yes, when did you start?
+",,"If unsure, enter approximate date",date_mdy,,,,"[intake_2_current_tx_yn] = '1'",y,,,,,
+intake_2b_provider,pearls_baseline_questionnaire,,text,"Who is treating you?
+",,"First and Last Name (e.g. John Doe)",,,,,"[intake_2_current_tx_yn] = '1'",y,,,,,
+intake_2c,pearls_baseline_questionnaire,,checkbox,"What diagnosis(es), if any, were you given?
+","1, Depression | 2, Dysthymia | 3, Generalized Anxiety Disorder | 4, Obsessive Compulsive Disorder | 5, Panic Disorder | 6, Phobias | 7, Post Traumatic Stress Disorder | 8, Substance Use Disorder | 9, Other | 10, None",,,,,,"[intake_2_current_tx_yn] = '1'",,,,,,
+intake_2c_other_spcfy,pearls_baseline_questionnaire,,text,"Please specify the other diagnosis:",,,,,,,"[intake_2c(9)] = '1'",,,,,,
+intake_2d_meds,pearls_baseline_questionnaire,,radio,"Are you <b><u>currently</b></u> taking anti-depressant or anti-anxiety medications?
+","1, Yes | 2, No",,,,,,"[intake_2_current_tx_yn] = '1'",y,,,,,
+intake_2d_psych_med1,pearls_baseline_questionnaire,"<font color=blue><font size =3><center>Current Medications</font>",dropdown,"Name of Current Medication 1:
+","1, alprazolam (Xanax) | 2, amitriptyline (Elavil) | 3, amoxapine (Asendin) | 4, bupropion SR (Wellbutrin SR) | 5, bupropion XL (Wellbutrin XL) | 6, buspirone (BuSpar) | 7, chlordiazepoxide (Librium) | 8, citalopram (Celexa) | 9, clomipramine (Anafranil) | 10, clonazepam (Klonopin) | 11, clorazepate (Tranxene) | 12, desipramine (Norpramin) | 13, desvenlafaxine (Pristiq) | 14, diazepam (Valium) | 15, doxepin (Adapin) | 16, duloxetine (Cymbalta) | 17, escitalopram (Lexapro) | 18, fluoxetine (Prozac) | 19, fluvoxamine (Luvox) | 20, fluvoxamine CR (Luvox CR) | 21, gabapentin (Neurontin) | 22, imipramine (Tofranil) | 23, lorazepam (Ativan) | 24, maprotiline (Ludiomil) | 25, mirtazapine (Remeron) | 26, nortriptyline (Pamelor) | 27, oxazepam (Serax) | 28, paroxetine (Paxil) | 29, paroxetine CR (Paxil CR) | 30, protriptyline (Vivactil) | 31, sertraline (Zoloft) | 32, trazadone (Desyrel) | 33, venlafaxine XR (Effexor XR)",,,,,,"[intake_2d_meds] = '1'",,,,,,
+intake_2d_med1_strength,pearls_baseline_questionnaire,,text,"Enter the prescription strength per unit (e.g. tablets, vials) for <font color=blue>[session_1_arm_1][intake_2d_psych_med1] </font>:",,,number,,,,"[intake_2d_meds] = '1'",,,,,,
+intake_2d_med1_units,pearls_baseline_questionnaire,,text,"Enter the number of units (e.g. tablets, vials) taken of <font color=blue>[session_1_arm_1][intake_2d_psych_med1] </font>:",,,number,,,,"[intake_2d_meds] = '1'",,,,,,
+intake_2d_med1_freq,pearls_baseline_questionnaire,,radio,"Enter the frequency <font color=blue>[session_1_arm_1][intake_2d_psych_med1] </font> is taken:","1, Once a day | 2, Twice a day | 3, Three times/day | 4, Four times/day | 5, PRN (As needed) | 6, Other",,,,,,"[intake_2d_meds] = '1'",,,,,,
+intake_2d_med1_route,pearls_baseline_questionnaire,,radio,"Enter the route of administration for <font color=blue>[session_1_arm_1][intake_2d_psych_med1] </font>:","1, Oral | 2, Other",,,,,,"[intake_2d_meds] = '1'",y,,,,,
+intake_2d_med1_sideeffect,pearls_baseline_questionnaire,,checkbox,"What, if any, adverse side effects have you experienced with <font color=blue>[session_1_arm_1][intake_2d_psych_med1] </font>? 
+
+<center>[DO NOT READ THE LIST]</center>","1, Anxiety | 2, Confusion | 3, Constipation | 4, Dizziness | 5, Diarrhea | 6, Hallucinations | 7, Headache | 8, Insomnia | 9, Memory change | 10, Nausea/Vomiting | 11, Orthostatic hypotension | 12, Sedation | 13, Sexual dysfunction | 14, Weight gain | 15, Weight loss | 33, Other | 0, None",,,,,,"[intake_2d_meds] = '1'",,,,,,
+intake_2d_med1_side_spec,pearls_baseline_questionnaire,,notes,"Please specify what adverse side effect(s) you have experienced with <font color=blue>[session_1_arm_1][intake_2d_psych_med1] </font>: ",,,,,,,"[intake_2d_med1_sideeffect(33)] = '1'",,,,,,
+intake_2d_next_med2,pearls_baseline_questionnaire,,yesno,"Do you take another anti-depression or anti-anxiety medication?",,,,,,,"[intake_2d_meds] = '1'",y,,,,,
+intake_2d_psych_med2,pearls_baseline_questionnaire," ",dropdown,"Name of Current Medication 2:
+","1, alprazolam (Xanax) | 2, amitriptyline (Elavil) | 3, amoxapine (Asendin) | 4, bupropion SR (Wellbutrin SR) | 5, bupropion XL (Wellbutrin XL) | 6, buspirone (BuSpar) | 7, chlordiazepoxide (Librium) | 8, citalopram (Celexa) | 9, clomipramine (Anafranil) | 10, clonazepam (Klonopin) | 11, clorazepate (Tranxene) | 12, desipramine (Norpramin) | 13, desvenlafaxine (Pristiq) | 14, diazepam (Valium) | 15, doxepin (Adapin) | 16, duloxetine (Cymbalta) | 17, escitalopram (Lexapro) | 18, fluoxetine (Prozac) | 19, fluvoxamine (Luvox) | 20, fluvoxamine CR (Luvox CR) | 21, gabapentin (Neurontin) | 22, imipramine (Tofranil) | 23, lorazepam (Ativan) | 24, maprotiline (Ludiomil) | 25, mirtazapine (Remeron) | 26, nortriptyline (Pamelor) | 27, oxazepam (Serax) | 28, paroxetine (Paxil) | 29, paroxetine CR (Paxil CR) | 30, protriptyline (Vivactil) | 31, sertraline (Zoloft) | 32, trazadone (Desyrel) | 33, venlafaxine XR (Effexor XR)",,,,,,"[intake_2d_next_med2] = '1'",,,,,,
+intake_2d_med2_strength,pearls_baseline_questionnaire,,text,"Enter the prescription strength per unit (e.g. tablets, vials) for <font color=blue>[session_1_arm_1][intake_2d_psych_med2] </font>:",,,number,,,,"[intake_2d_next_med2] = '1'",,,,,,
+intake_2d_med2_units,pearls_baseline_questionnaire,,text,"Enter the number of units (e.g. tablets, vials) taken of <font color=blue>[session_1_arm_1][intake_2d_psych_med2] </font>:",,,number,,,,"[intake_2d_next_med2] = '1'",,,,,,
+intake_2d_med2_freq,pearls_baseline_questionnaire,,radio,"Enter the frequency <font color=blue>[session_1_arm_1][intake_2d_psych_med2] </font> is taken:","1, Once a day | 2, Twice a day | 3, Three times/day | 4, Four times/day | 5, PRN (As needed) | 6, Other",,,,,,"[intake_2d_next_med2] = '1'",,,,,,
+intake_2d_med2_route,pearls_baseline_questionnaire,,radio,"Enter the route of administration for <font color=blue>[session_1_arm_1][intake_2d_psych_med2] </font>:","1, Oral | 2, Other",,,,,,"[intake_2d_next_med2] = '1'",,,,,,
+intake_2d_med2_sideeffect,pearls_baseline_questionnaire,,checkbox,"What, if any, adverse side effects have you experienced with <font color=blue>[session_1_arm_1][intake_2d_psych_med2] </font>? 
+
+<center>[DO NOT READ THE LIST]","1, Anxiety | 2, Confusion | 3, Constipation | 4, Dizziness | 5, Diarrhea | 6, Hallucinations | 7, Headache | 8, Insomnia | 9, Memory change | 10, Nausea/Vomiting | 11, Orthostatic hypotension | 12, Sedation | 13, Sexual dysfunction | 14, Weight gain | 15, Weight loss | 33, Other | 0, None",,,,,,"[intake_2d_next_med2] = '1'",,,,,,
+intake_2d_med2_side_spec,pearls_baseline_questionnaire,,notes,"Please specify what adverse side effect(s) you have experienced with <font color=blue>[session_1_arm_1][intake_2d_psych_med2] </font>: ",,,,,,,[intake_2d_med2_sideeffect(33)]='1',,,,,,
+intake_2d_next_med3,pearls_baseline_questionnaire,,yesno,"Do you take another anti-depression or anti-anxiety medication?",,,,,,,"[intake_2d_next_med2] = '1'",y,,,,,
+intake_2d_psych_med3,pearls_baseline_questionnaire," ",dropdown,"Name of Current Medication 3:
+","1, alprazolam (Xanax) | 2, amitriptyline (Elavil) | 3, amoxapine (Asendin) | 4, bupropion SR (Wellbutrin SR) | 5, bupropion XL (Wellbutrin XL) | 6, buspirone (BuSpar) | 7, chlordiazepoxide (Librium) | 8, citalopram (Celexa) | 9, clomipramine (Anafranil) | 10, clonazepam (Klonopin) | 11, clorazepate (Tranxene) | 12, desipramine (Norpramin) | 13, desvenlafaxine (Pristiq) | 14, diazepam (Valium) | 15, doxepin (Adapin) | 16, duloxetine (Cymbalta) | 17, escitalopram (Lexapro) | 18, fluoxetine (Prozac) | 19, fluvoxamine (Luvox) | 20, fluvoxamine CR (Luvox CR) | 21, gabapentin (Neurontin) | 22, imipramine (Tofranil) | 23, lorazepam (Ativan) | 24, maprotiline (Ludiomil) | 25, mirtazapine (Remeron) | 26, nortriptyline (Pamelor) | 27, oxazepam (Serax) | 28, paroxetine (Paxil) | 29, paroxetine CR (Paxil CR) | 30, protriptyline (Vivactil) | 31, sertraline (Zoloft) | 32, trazadone (Desyrel) | 33, venlafaxine XR (Effexor XR)",,,,,,"[intake_2d_next_med3] = '1'",,,,,,
+intake_2d_med3_strength,pearls_baseline_questionnaire,,text,"Enter the prescription strength per unit (e.g. tablets, vials) for <font color=blue>[session_1_arm_1][intake_2d_psych_med3] </font>:",,,number,,,,"[intake_2d_next_med3] = '1'",,,,,,
+intake_2d_med3_units,pearls_baseline_questionnaire,,text,"Enter the number of units (e.g. tablets, vials) taken of <font color=blue>[session_1_arm_1][intake_2d_psych_med3] </font>:",,,number,,,,"[intake_2d_next_med3] = '1'",,,,,,
+intake_2d_med3_freq,pearls_baseline_questionnaire,,radio,"Enter the frequency <font color=blue>[session_1_arm_1][intake_2d_psych_med3] </font> is taken:","1, Once a day | 2, Twice a day | 3, Three times/day | 4, Four times/day | 5, PRN (As needed) | 6, Other",,,,,,"[intake_2d_next_med3] = '1'",,,,,,
+intake_2d_med3_route,pearls_baseline_questionnaire,,radio,"Enter the route of administration for <font color=blue>[session_1_arm_1][intake_2d_psych_med3] </font>:","1, Oral | 2, Other",,,,,,"[intake_2d_next_med3] = '1'",,,,,,
+intake_2d_med3_sideeffect,pearls_baseline_questionnaire,,checkbox,"What, if any, adverse side effects have you experienced with <font color=blue>[session_1_arm_1][intake_2d_psych_med3] </font>?
+
+<center> [DO NOT READ THE LIST]","1, Anxiety | 2, Confusion | 3, Constipation | 4, Dizziness | 5, Diarrhea | 6, Hallucinations | 7, Headache | 8, Insomnia | 9, Memory change | 10, Nausea/Vomiting | 11, Orthostatic hypotension | 12, Sedation | 13, Sexual dysfunction | 14, Weight gain | 15, Weight loss | 33, Other | 0, None",,,,,,"[intake_2d_next_med3] = '1'",,,,,,
+intake_2d_med3_side_spec,pearls_baseline_questionnaire,,notes,"Please specify what adverse side effect(s) you have experienced with <font color=blue>[session_1_arm_1][intake_2d_psych_med3] </font>: ",,,,,,,[intake_2d_med3_sideeffect(33)]='1',,,,,,
+intake_2d_next_med4,pearls_baseline_questionnaire,,yesno,"Do you take another anti-depression or anti-anxiety medication?",,,,,,,"[intake_2d_next_med3] = '1'",y,,,,,
+intake_2d_psych_med4,pearls_baseline_questionnaire," ",dropdown,"Name of Current Medication 4:
+","1, alprazolam (Xanax) | 2, amitriptyline (Elavil) | 3, amoxapine (Asendin) | 4, bupropion SR (Wellbutrin SR) | 5, bupropion XL (Wellbutrin XL) | 6, buspirone (BuSpar) | 7, chlordiazepoxide (Librium) | 8, citalopram (Celexa) | 9, clomipramine (Anafranil) | 10, clonazepam (Klonopin) | 11, clorazepate (Tranxene) | 12, desipramine (Norpramin) | 13, desvenlafaxine (Pristiq) | 14, diazepam (Valium) | 15, doxepin (Adapin) | 16, duloxetine (Cymbalta) | 17, escitalopram (Lexapro) | 18, fluoxetine (Prozac) | 19, fluvoxamine (Luvox) | 20, fluvoxamine CR (Luvox CR) | 21, gabapentin (Neurontin) | 22, imipramine (Tofranil) | 23, lorazepam (Ativan) | 24, maprotiline (Ludiomil) | 25, mirtazapine (Remeron) | 26, nortriptyline (Pamelor) | 27, oxazepam (Serax) | 28, paroxetine (Paxil) | 29, paroxetine CR (Paxil CR) | 30, protriptyline (Vivactil) | 31, sertraline (Zoloft) | 32, trazadone (Desyrel) | 33, venlafaxine XR (Effexor XR)",,,,,,"[intake_2d_next_med4] = '1'",,,,,,
+intake_2d_med4_strength,pearls_baseline_questionnaire,,text,"Enter the prescription strength per unit (e.g. tablets, vials) for <font color=blue>[session_1_arm_1][intake_2d_psych_med4] </font>:",,,number,,,,"[intake_2d_next_med4] = '1'",,,,,,
+intake_2d_med4_units,pearls_baseline_questionnaire,,text,"Enter the number of units (e.g. tablets, vials) taken of <font color=blue>[session_1_arm_1][intake_2d_psych_med4] </font>:",,,number,,,,"[intake_2d_next_med4] = '1'",,,,,,
+intake_2d_med4_freq,pearls_baseline_questionnaire,,radio,"Enter the frequency <font color=blue>[session_1_arm_1][intake_2d_psych_med4] </font> is taken:","1, Once a day | 2, Twice a day | 3, Three times/day | 4, Four times/day | 5, PRN (As needed) | 6, Other",,,,,,"[intake_2d_next_med4] = '1'",,,,,,
+intake_2d_med4_route,pearls_baseline_questionnaire,,radio,"Enter the route of administration for <font color=blue>[session_1_arm_1][intake_2d_psych_med4] </font>:","1, Oral | 2, Other",,,,,,"[intake_2d_next_med4] = '1'",,,,,,
+intake_2d_med4_sideeffect,pearls_baseline_questionnaire,,checkbox,"What, if any, adverse side effects have you experienced with <font color=blue>[session_1_arm_1][intake_2d_psych_med4] </font>? 
+
+<center>[DO NOT READ THE LIST]","1, Anxiety | 2, Confusion | 3, Constipation | 4, Dizziness | 5, Diarrhea | 6, Hallucinations | 7, Headache | 8, Insomnia | 9, Memory change | 10, Nausea/Vomiting | 11, Orthostatic hypotension | 12, Sedation | 13, Sexual dysfunction | 14, Weight gain | 15, Weight loss | 33, Other | 0, None",,,,,,"[intake_2d_next_med4] = '1'",,,,,,
+intake_2d_med4_side_spec,pearls_baseline_questionnaire,,notes,"Please specify what adverse side effect(s) you have experienced with <font color=blue>[session_1_arm_1][intake_2d_psych_med4] </font>: ",,,,,,,[intake_2d_med4_sideeffect(33)]='1',,,,,,
+intake_2d_next_med5,pearls_baseline_questionnaire,,yesno,"Do you take another anti-depression or anti-anxiety medication?",,,,,,,"[intake_2d_next_med4] = '1'",y,,,,,
+intake_3_previous_tx_yn,pearls_baseline_questionnaire,"<font color=blue><font size=3><center>Past Treatment</font>",radio,"Have you ever been treated <b><u>in the past</b></u> for depression or other emotional problems?
+","1, Yes | 2, No | 3, Don't know | 4, N/A",,,,,,,y,,,,,
+intake_3ai,pearls_baseline_questionnaire,,text,"When was the most recent time?
+
+<I>(Enter the approximate date when treatment began.)</I>
+",,,date_mdy,,,,"[intake_3_previous_tx_yn] = '1'",y,,,,,
+intake_3ai_1,pearls_baseline_questionnaire,,text,"How long did you receive treatment?",,"Decimal number (ex. 3 months = 3.00; 1 year and 3 months=1.25)",number_2dp,,,,"[intake_3_previous_tx_yn] = '1'",y,,,,,
+intake_3ai_2,pearls_baseline_questionnaire,,radio,"Units for length of treatment:","1, hours | 2, days | 3, weeks | 4, months | 5, years",,,,,,"[intake_3_previous_tx_yn] = '1'",,,,,,
+intake_3bi,pearls_baseline_questionnaire,,text,"Who was treating you?
+",,Name,,,,,"[intake_3_previous_tx_yn] = '1'",,,,,,
+intake_3ci,pearls_baseline_questionnaire,,checkbox,"What diagnosis, if any, were you given?
+","1, Depression | 2, Dysthymia | 3, Generalized Anxiety Disorder | 4, Obsessive Compulsive Disorder | 5, Panic Disorder | 6, Phobias | 7, Post Traumatic Stress Disorder | 8, Substance Use Disorder | 33, Other | 0, None",,,,,,"[intake_3_previous_tx_yn] = '1'",y,,,,,
+intake_3ci_other_spcfy,pearls_baseline_questionnaire,,text,"Please specify the other diagnosis:",,,,,,,"[intake_3ci(33)] = '1'",y,,,,,
+intake_3_next_past_tx,pearls_baseline_questionnaire,,yesno,"<b><u>Was there a time before</b></u> that you have been treated for depression or other emotional problems?",,,,,,,"[intake_3_previous_tx_yn] = '1'",y,,,,,
+intake_3aii,pearls_baseline_questionnaire," ",text,"When was the time before that?
+
+
+<I>(Enter the approximate date when treatment began.)</I>",,,date_mdy,,,,"[intake_3_next_past_tx] = '1'",,,,,,
+intake_3aii_1,pearls_baseline_questionnaire,,text,"How long did you receive treatment?
+
+",,"Decimal number (ex. 3 months = 3.00; 1 year and 3 months=1.25)",,,,,"[intake_3_next_past_tx] = '1'",y,,,,,
+intake_3aii_2,pearls_baseline_questionnaire,,radio,"Units for length of treatment:","1, hours | 2, days | 3, weeks | 4, months | 5, years",,,,,,"[intake_3_next_past_tx] = '1'",,,,,,
+intake_3bii,pearls_baseline_questionnaire,,text,"Who was treating you?
+",,Name,,,,,"[intake_3_next_past_tx] = '1'",y,,,,,
+intake_3cii,pearls_baseline_questionnaire,,checkbox,"What diagnosis, if any, were you given?
+","1, Depression | 2, Dysthymia | 3, Generalized Anxiety Disorder | 4, Obsessive Compulsive Disorder | 5, Panic Disorder | 6, Phobias | 7, Post Traumatic Stress Disorder | 8, Substance Use Disorder | 33, Other | 0, None",,,,,,"[intake_3_next_past_tx] = '1'",y,,,,,
+intake_3cii_other_spcfy,pearls_baseline_questionnaire,,text,"Please specify the other diagnosis:",,,,,,,"[intake_3cii(33)] = '1'",,,,,,
+intake_3_next_past_tx2,pearls_baseline_questionnaire,,yesno,"<b><u>Was there a time before</b></u> that you have been treated for depression or other emotional problems?",,,,,,,"[intake_3_previous_tx_yn] = '1'",y,,,,,
+intake_3aiii,pearls_baseline_questionnaire," ",text,"When was the time before that?",,,date_mdy,,,,"[intake_3_next_past_tx2] = '1'",y,,,,,
+intake_3aiii_1,pearls_baseline_questionnaire,,text,"How long did you receive treatment?",,"Decimal number (ex. 3 months = 3.00; 1 year and 3 months=1.25)",number_2dp,,,,"[intake_3_next_past_tx2] = '1'",y,,,,,
+intake_3aiii_2,pearls_baseline_questionnaire,,radio,"Units for length of treatment:","1, hours | 2, days | 3, weeks | 4, months | 5, years",,,,,,"[intake_3_next_past_tx2] = '1'",,,,,,
+intake_3biii,pearls_baseline_questionnaire,,text,"Who was treating you?",,Name,,,,,"[intake_3_next_past_tx2] = '1'",y,,,,,
+intake_3ciii,pearls_baseline_questionnaire,,checkbox,"What diagnosis, if any, were you given?","1, Depression | 2, Dysthymia | 3, Generalized Anxiety Disorder | 4, Obsessive Compulsive Disorder | 5, Panic Disorder | 6, Phobias | 7, Post Traumatic Stress Disorder | 8, Substance Use Disorder | 33, Other | 0, None",,,,,,"[intake_3_next_past_tx2] = '1'",,,,,,
+intake_3ciii_other_spcfy,pearls_baseline_questionnaire,,text,"Please specify the other diagnosis:",,,,,,,"[intake_3ciii(33)] = '1'",,,,,,
+intake_3d,pearls_baseline_questionnaire,"<font color=blue><font size=3><center>Past Medication</font>",radio,"Have you ever taken any prescription antidepressant or anti-anxiety medications <b><u>in the past?</b></u>
+
+","1, Yes | 2, No",,,,,,,y,,,,,
+intake_3d_yes_specify,pearls_baseline_questionnaire,,checkbox,"Medications taken in the past:","1, alprazolam (Xanax) | 2, amitriptyline (Elavil) | 3, amoxapine (Asendin) | 4, bupropion SR (Wellbutrin SR) | 5, bupropion XL (Wellbutrin XL) | 6, buspirone (BuSpar) | 7, chlordiazepoxide (Librium) | 8, citalopram (Celexa) | 9, clomipramine (Anafranil) | 10, clonazepam (Klonopin) | 11, clorazepate (Tranxene) | 12, desipramine (Norpramin) | 13, desvenlafaxine (Pristiq) | 14, diazepam (Valium) | 15, doxepin (Adapin) | 16, duloxetine (Cymbalta) | 17, escitalopram (Lexapro) | 18, fluoxetine (Prozac) | 19, fluvoxamine (Luvox) | 20, fluvoxamine CR (Luvox CR) | 21, gabapentin (Neurontin) | 22, imipramine (Tofranil) | 23, lorazepam (Ativan) | 24, maprotiline (Ludiomil) | 25, mirtazapine (Remeron) | 26, nortriptyline (Pamelor) | 27, oxazepam (Serax) | 28, paroxetine (Paxil) | 29, paroxetine CR (Paxil CR) | 30, protriptyline (Vivactil) | 31, sertraline (Zoloft) | 32, trazadone (Desyrel) | 33, venlafaxine XR (Effexor XR) | 333, Other",,,,,,"[intake_3d] = '1'",,,,,,
+intake_3d_yes_other_spec,pearls_baseline_questionnaire,,text,"Please specify the other medication you have taken in the past.",,,,,,,"[intake_3d_yes_specify(333)] = '1'",,,,,,
+intake_4_other_prev_tx,pearls_baseline_questionnaire," <font color=blue><font size=3><center>Any other type of treatment</font>",radio,"Have you previously had any other type of treatment for depression <I>(e.g. group therapy, individual psychotherapy, alternative treatments, etc)?</I>","1, Yes | 2, No",,,,,,,y,,,,,
+intake_4_yes_specify,pearls_baseline_questionnaire,,text,"Please specify the other type of treatment:",,,,,,,"[intake_4_other_prev_tx] = '1'",y,,,,,
+intake_general_health,pearls_baseline_questionnaire," 
+<font color=blue><font size=3><center>General Health</font>",radio,"In general, how would you describe your health?","1, excellent | 2, very good | 3, good | 4, fair | 5, poor",,,,,,,y,,,general_health,,
+intake_comments,pearls_baseline_questionnaire,,notes,"Why do you rate your health as [session_1_arm_1][intake_general_health]:",,,,,,,"[intake_general_health] = '4' or [intake_general_health] = '5'",,,,,,
+intake_6,pearls_baseline_questionnaire," 
+ <font color=blue><font size=3><center>Social Activities</font>",radio,"During the PAST MONTH, which statement describes how socially active you have been? <p><i><font color = blue>Social activities are those that involve contact with other people, such as going to faith communities, clubs or associations, or visiting friends or family members.</font>","1, None | 2, A little | 3, Fairly Active | 4, Quite Active | 5, Very Active | 6, Extremely Active",,,,,,,y,,,pearl_6,,
+intake_7a,pearls_baseline_questionnaire,"During the past month, what type of social activity/activities have you been involved in? (Note the AVERAGE number of TIMES PER WEEK you do the listed activity.)
+
+",text,"a) in-person visit with friends or family (other than those you live with)",,"Number of times per week",number,,,,,y,,,,,
+intake_7b,pearls_baseline_questionnaire,,text,"b) telephone contacts with friends/family",,"Number of times per week",number,,,,,y,,,,,
+intake_7c,pearls_baseline_questionnaire,,text,"c) visit to senior center or community center",,"Number of times per week",number,,,,,y,,,,,
+intake_7d,pearls_baseline_questionnaire,,text,"d) volunteer work",,"Number of times per week",number,,,,,y,,,,,
+intake_7e,pearls_baseline_questionnaire,,text,"e) attendance at church, club or association",,"Number of times per week",number,,,,,y,,,,,
+intake_7f,pearls_baseline_questionnaire,,text,"f) other 
+
+<center><font color = blue>[If no other activity, Enter 0]</center></font>",,"Number of times per week",,,,,,,,,,,
+intake_7f_other,pearls_baseline_questionnaire,,text,"What other social activities were you involved in this month?",,,,,,,"[intake_7f] > 0",y,,,,,
+intake_8,pearls_baseline_questionnaire," <font color=blue><font size=3><center>Physical Activities</font>",descriptive,"<b>Physical activities</b> are activities where you move and increase your heart rate above its resting rate, whether you do them for pleasure, work or transportation. The following questions ask about the amount and intensity of physical activity you usually do. The intensity of the activity is related to the amount of energy you use to do these activities.  
+
+<b>Examples of physical activity intensity levels:</b>
+",,,,,,,,,,,,,
+intake_8a,pearls_baseline_questionnaire,,descriptive,"<b>Light activities</b>
+• your heart beats slightly faster than normal 
+• you can talk and sing
+
+",,,,,,,,,,,,,
+intake_moderate,pearls_baseline_questionnaire,,descriptive,"<b>Moderate activities</b>
+• your heart beats faster than normal 
+• you can talk but not sing
+
+",,,,,,,,,,,,,
+intake_vig,pearls_baseline_questionnaire,,descriptive,"<b>Vigorous activities </b>
+•	your heart rate increases a lot
+•	you can't talk or your talking is broken up by large breaths
+
+",,,,,,,,,,,,,
+intake_rap1_1,pearls_baseline_questionnaire,"<b>How physically active are you? Please tell me which of the following statements describe you.</b> <i>(Check one answer on each line)</i>",radio,"I rarely or never do any physical activities","1, Yes | 2, No",,,,,,,y,,,pearl_rap1,,
+intake_rap1_2,pearls_baseline_questionnaire,,radio,"I do some <b>light</b> or <b>moderate</b> physical activities, but not every week","1, Yes | 2, No",,,,,,,y,,,pearl_rap1,,
+intake_rap1_3,pearls_baseline_questionnaire,,radio,"I do some <b>light</b> physical activity every week.","1, Yes | 2, No",,,,,,,y,,,pearl_rap1,,
+intake_rap1_4,pearls_baseline_questionnaire,,radio,"I do <b>moderate</b> physical activities every week, but less than 30 minutes a day or 5 days a week.","1, Yes | 2, No",,,,,,,y,,,pearl_rap1,,
+intake_rap1_5,pearls_baseline_questionnaire,,radio,"I do <b>vigorous</b> physical activities every week, but less than 20 minutes a day or 3 days a week.","1, Yes | 2, No",,,,,,,y,,,pearl_rap1,,
+intake_rap1_6,pearls_baseline_questionnaire,,radio,"I do 30 minutes or more a day of <b>moderate</b> physical activities, 5 or more days a week.","1, Yes | 2, No",,,,,,,y,,,pearl_rap1,,
+intake_rap1_7,pearls_baseline_questionnaire,,radio,"I do 20 minutes or more a day of <b>vigorous</b> physical activities, 3 or more days a week.","1, Yes | 2, No",,,,,,,y,,,pearl_rap1,,
+intake_rap2_1,pearls_baseline_questionnaire,,radio,"I do activities to increase muscle <b>strength,</b> such as lifting weights or calisthenics, once a week or more.","1, Yes | 2, No",,,,,,,y,,,pearl_rap2,,
+intake_rap2_2,pearls_baseline_questionnaire,,radio,"I do activities to improve <b>flexibility,</b> such as stretching or yoga, once a week or more.","1, Yes | 2, No",,,,,,,y,,,pearl_rap2,,
+intake_p_l,pearls_baseline_questionnaire,,notes,"Please describe any physical limitations you may have:
+
+[If none, Enter ""none""]",,,,,,,,y,,,,,
+intake_9,pearls_baseline_questionnaire," <font color=blue><font size=3><center>Pleasant Activities</font>",radio,"During the <b><i>past month,</i></b> how often have you participated in pleasant activities? <font color = green>(Refer to Pleasant Activity List if participant needs a prompt.)</font> <p><i><font color = blue><b>Pleasant activities</b> are those that you enjoy. Some may be also considered social activities, like visiting with friends, while others may also be physical activities, like gardening. The main point is that the activity gives you pleasure and that it is something you can initiate on your own.</font>","1, Everyday | 2, Nearly every day | 3, Half the month | 4, Less than half the month | 5, Hardly at all",,,,,,,y,,,pleasant_activity,,
+session_date,icare_session_tracking_form,,text,"Session Date",,,date_dmy,,,,,y,,,,,
+contact_reason,icare_session_tracking_form,,radio,"Reason for contact:","1, Session - Protocoled | 2, Session - Supplementary (>10 min) | 3, Brief check-in (< 10 min)",,,,,,,y,,,,,
+intiated_by,icare_session_tracking_form,,radio,"Contact initiated by:","1, Coach | 2, Participant",,,,,,,y,,,,,
+session_number,icare_session_tracking_form,,radio,"Session number","1, 1 | 2, 2 | 3, 3 | 4, 4 | 5, 5 | 6, 6 | 7, 7 | 8, 8 | 9, 9 | 10, 10 | 11, 11 | 12, 12 | 13, 13 | 14, 14 | 15, 15",,,,,,"[contact_reason] = '1'",y,,,,,
+contact_type,icare_session_tracking_form,,radio,"Type of Contact","1, In person | 2, Phone | 3, My Health Online | 4, E-mail | 5, Text | 6, Mail | 7, Blue jeans | 8, None, Session not completed",,,,,,,y,,,,,
+contact_type_in_person,icare_session_tracking_form,,notes,"If modified session, please explain:",,,,,,,,y,,,,,
+missed_session_reason,icare_session_tracking_form,,radio,"Reason for missed session","1, Participant opted out of further I-CARE contact | 2, Unable to complete session within window | 3, Other",,,,,,"[contact_type] = '8'",y,,,,,
+missed_other_reason,icare_session_tracking_form,,notes,"Specify the reason for the missed session",,,,,,,"[missed_session_reason] = '3'",y,,,,,
+accompanied,icare_session_tracking_form,,yesno,"Did someone accompany the patient to the session?",,,,,,,"[contact_type] = '1'",y,,,,,
+phq9_1,icare_session_tracking_form," <font color=blue><font size=3><center>PHQ9</font color></font size></center>
+
+Ask the participant: ""Over the <i><b><u>LAST TWO WEEKS,</u> how often have you been bothered by any of the following?""</i></b> (Record the following in the appropriate place in each row, depending on their answer). ",radio,"Little interest or pleasure in doing things","0, Not at All | 1, Several Days | 2, More than Half the Days | 3, Nearly Every Day",,,,,,"[session_number] <> '1' and [contact_type]<>'8'",,,,phq9,,
+phq9_2,icare_session_tracking_form,,radio,"Feeling down, depressed or hopeless","0, Not at All | 1, Several Days | 2, More than Half the Days | 3, Nearly Every Day",,,,,,"[session_number] <> '1' and [contact_type]<>'8'",,,,phq9,,
+phq9_3,icare_session_tracking_form,,radio,"Trouble falling or staying asleep, or sleeping too much","0, Not at All | 1, Several Days | 2, More than Half the Days | 3, Nearly Every Day",,,,,,"[session_number] <> '1' and [contact_type]<>'8'",,,,phq9,,
+phq9_4,icare_session_tracking_form,,radio,"Feeling tired of having little energy","0, Not at All | 1, Several Days | 2, More than Half the Days | 3, Nearly Every Day",,,,,,"[session_number] <> '1' and [contact_type]<>'8'",,,,phq9,,
+phq9_5,icare_session_tracking_form,,radio,"Poor appetite or overeating","0, Not at All | 1, Several Days | 2, More than Half the Days | 3, Nearly Every Day",,,,,,"[session_number] <> '1' and [contact_type]<>'8'",,,,phq9,,
+phq9_6,icare_session_tracking_form,,radio,"Feeling bad about yourself - or that you are a failure or have let yourself or your family down","0, Not at All | 1, Several Days | 2, More than Half the Days | 3, Nearly Every Day",,,,,,"[session_number] <> '1' and [contact_type]<>'8'",,,,phq9,,
+phq9_7,icare_session_tracking_form,,radio,"Trouble concentrating on things, such as reading the newspaper or watching television","0, Not at All | 1, Several Days | 2, More than Half the Days | 3, Nearly Every Day",,,,,,"[session_number] <> '1' and [contact_type]<>'8'",,,,phq9,,
+phq9_8,icare_session_tracking_form,,radio,"Moving or speaking so slowly that other people could have noticed. Or the opposite - being so fidgety or restless that you have been moving around a lot more than usual","0, Not at All | 1, Several Days | 2, More than Half the Days | 3, Nearly Every Day",,,,,,"[session_number] <> '1' and [contact_type]<>'8'",,,,phq9,,
+phq9_9,icare_session_tracking_form,,radio,"Thoughts that you would be better off dead, or of hurting yourself","0, Not at All | 1, Several Days | 2, More than Half the Days | 3, Nearly Every Day",,,,,,"[session_number] <> '1' and [contact_type]<>'8'",,,,phq9,,
+phq9_score,icare_session_tracking_form,,calc,"PHQ-9 Score",[phq9_1]+[phq9_2]+[phq9_3]+[phq9_4]+[phq9_5]+[phq9_6]+[phq9_7]+[phq9_8]+[phq9_9],,,,,,"[session_number] <> '1' and [contact_type]<>'8'",y,,,,,
+glb_session_viewed,icare_session_tracking_form,,checkbox,"GLB sessions viewed:","1, No sessions viewed | 2, Session 1 | 3, Session 2 | 4, Session 3 | 5, Session 4 | 6, Session 5 | 7, Session 6 | 8, Session 8 | 9, Session 9 | 10, Session 10 | 11, Session 11 | 12, Session 12",,,,,,"[session_number] = '6' or [session_number] = '7' or [session_number] = '8' or [session_number] = '9' or [session_number] = '10' or [session_number] = '11' or [session_number] = '12' or [session_number] = '13' or [session_number] = '14' or [session_number] = '15'",y,,,,,
+glb_summaries_read,icare_session_tracking_form,,checkbox,"GLB summaries read:","1, No GLB summary read | 2, GLB summary 1 | 3, GLB summary 2 | 4, GLB summary 3 | 5, GLB summary 4",,,,,,"[session_number] = '6' or [session_number] = '7' or [session_number] = '8' or [session_number] = '9' or [session_number] = '10' or [session_number] = '11' or [session_number] = '12' or [session_number] = '13' or [session_number] = '14' or [session_number] = '15'",y,,,,,
+psych_med_adherence,icare_session_tracking_form,"  <font color=blue><font size=3><center>Medication</font>",radio,"Over the last two weeks, how much of the time in the past two weeks did you take <font color=blue>[session_1_arm_1][intake_2d_psych_med1];  </font> <font color=green>[session_1_arm_1][intake_2d_psych_med2];  </font> <font color=purple>[session_1_arm_1][intake_2d_psych_med3]; </font> <font color=orange>[session_1_arm_1][intake_2d_psych_med4] </font> in the amount prescribed and on the schedule prescribed?
+
+For example, if I took <I><b>half</u><b> of the prescribed dose, every day, my answer would be 50%. If I took the prescribed dose, but missed 6 out of the past 30 days, my answer would be (24/30=80) 80%-99%.","1, 100% | 2, 80% to 99% | 3, 60% to 79% | 4, 50% to 59% | 5, <50% | 6, Never | 99, Declined to state",,,,,,"[contact_type] <> '8' and [intake_2d_meds] = '1' and [contact_reason] <> '4'",y,,,,,
+starting_weight,icare_session_tracking_form,,text,"Enter the GLB starting weight:",,"Include a decimal (e.g. 220.0)",number_1dp,50,500,,"[session_number] = '5' and [contact_type] <> '8'",,,,,,
+topic_baseline_qq,icare_session_tracking_form," <font color=blue><font size=3><center>I-CARE Content (Mood)</font>",radio,"Baseline Questionnaire","1, Yes | 0, No",,,,,,"[session_number] = '1' and [contact_type] <> '8'",y,,,mood,,
+topic_phq9,icare_session_tracking_form,,radio,PHQ-9,"1, Yes | 0, No",,,,,,"[contact_type] <> '8'",y,,,mood,,
+topic_psych_med_use,icare_session_tracking_form,,radio,"Psychiatric medication adherence","1, Yes | 0, No",,,,,,"([session_number] = '1' or [session_number] = '2' or [session_number] = '3' or [session_number] = '4' or [session_number] = '5' or [session_number] = '6' or [session_number] = '7' or [session_number] = '8' or [session_number] = '9' or [session_number] = '10' or [session_number] = '11' or [session_number] = '12' or [session_number] = '13' or [session_number] = '14' or [session_number] = '15') and [contact_type] <> '8'",y,,,mood,,
+topic_principles_icare,icare_session_tracking_form,,radio,"Overview, principles of I-CARE Mood","1, Yes | 0, No",,,,,,"[session_number] = '1' and [contact_type] <> '8'",y,,,mood,,
+topic_generate_prob_list,icare_session_tracking_form,,radio,"Problem list generation","1, Yes | 0, No",,,,,,"[session_number] = '1' and [contact_type] <> '8'",y,,,mood,,
+topic_previous_problem,icare_session_tracking_form,,radio,"Previous problem and action plan review","1, Yes | 0, No",,,,,,"[session_number] = '2' or [session_number] = '3' or [session_number] = '4' or [session_number] = '5' or [session_number] = '6' or [session_number] = '7' or [session_number] = '8' or [session_number] = '9' and [contact_type] <> '8'",y,,,mood,,
+topic_new_problem,icare_session_tracking_form,,radio,"New problem and action plan identification","1, Yes | 0, No",,,,,,"[session_number] = '1' or [session_number] = '2' or [session_number] = '3' or [session_number] = '4' or [session_number] = '5' or [session_number] = '6' or [session_number] = '7' or [session_number] = '8' or [session_number] = '9' and [contact_type] <> '8'",y,,,mood,,
+topic_social_activity,icare_session_tracking_form,,radio,"Social activity review and plan","1, Yes | 0, No",,,,,,"[session_number] = '1' or [session_number] = '2' or [session_number] = '3' or [session_number] = '4' or [session_number] = '5' or [session_number] = '6' or [session_number] = '7' or [session_number] = '8' or [session_number] = '9' and [contact_type] <> '8'",y,,,mood,,
+topic_pleasant_activity,icare_session_tracking_form,,radio,"Pleasant activity review and plan","1, Yes | 0, No",,,,,,"[session_number] = '1' or [session_number] = '2' or [session_number] = '3' or [session_number] = '4' or [session_number] = '5' or [session_number] = '6' or [session_number] = '7' or [session_number] = '8' or [session_number] = '9'  and [contact_type] <> '8'",y,,,mood,,
+topic_physical_activitiy,icare_session_tracking_form,,radio,"Physical activity review and plan","1, Yes | 0, No",,,,,,"[session_number] = '1' or [session_number] = '2' or [session_number] = '3' or [session_number] = '4' or [session_number] = '5' or [session_number] = '6' or [session_number] = '7' or [session_number] = '8' or [session_number] = '9' and [contact_type] <> '8'",y,,,mood,,
+topic_intro_hc,icare_session_tracking_form," <font color=blue><font size=3><center>I-CARE Content (Lifestyle)</font>",radio,"Intro to health coach","1, Yes | 0, No",,,,,,"[session_number] = '1' and [contact_type] <> '8'",y,,,lifestyle,,
+topic_seq_intro,icare_session_tracking_form,,radio,"Intro to sequenced program integration","1, Yes | 0, No",,,,,,"[session_number] = '1' and [contact_type] <> '8'",y,,,lifestyle,,
+topic_commit,icare_session_tracking_form,,radio,"Commitment to work as a team","1, Yes | 0, No",,,,,,"([session_number] = '1' or [session_number] = '5' or [session_number] = '9') and [contact_type] <> '8'",y,,,lifestyle,,
+topic_binder,icare_session_tracking_form,,radio,"Provision of participant binder","1, Yes | 0, No",,,,,,"[session_number] = '1' and [contact_type] <> '8'",y,,,lifestyle,,
+topic_pa_safety,icare_session_tracking_form,,radio,"Physical activity safety guidelines handout","1, Yes | 0, No",,,,,,"[session_number] = '1' and [contact_type] <> '8'",y,,,lifestyle,,
+topic_scale_eval,icare_session_tracking_form,,radio,"Evaluation of bathroom scale ownership","1, Yes | 0, No",,,,,,"[session_number] = '1' and [contact_type] <> '8'",y,,,lifestyle,,
+topic_scale_given,icare_session_tracking_form,,radio,"Provision of bathroom scale as needed","1, Yes | 0, No",,,,,,"[session_number] = '2' and [contact_type] <> '8'",y,,,lifestyle,,
+topic_tech_support,icare_session_tracking_form,,radio,"Technology support/instruction","1, Yes | 0, No",,,,,,"([session_number] = '1' or [session_number] = '4' or [session_number] = '5' or [session_number] = '6') and [contact_type] <> '8'",y,,,lifestyle,,
+topic_intro_self_study,icare_session_tracking_form,,radio,"I-CARE Lifestyle intro and self-study guidelines","1, Yes | 0, No",,,,,,"[session_number] = '5' and [contact_type] <> '8'",y,,,lifestyle,,
+topic_goals,icare_session_tracking_form,,radio,"Goals confirmation: weight, physical activity, steps","1, Yes | 0, No",,,,,,"[session_number] = '6' and [contact_type] <> '8'",y,,,lifestyle,,
+topic_cal_reduc_tools,icare_session_tracking_form,,radio,"Presentation of optional tools to reduce calorie intake","1, Yes | 0, No",,,,,,"[session_number] = '6' and [contact_type] <> '8'",y,,,lifestyle,,
+topic_self_monitoring,icare_session_tracking_form,,radio,"Progress check - self- monitoring","1, Yes | 0, No",,,,,,"[session_number] = '6' and [contact_type] <> '8'",y,,,lifestyle,,
+topic_prog_weight,icare_session_tracking_form,,radio,"Progress check - weight","1, Yes | 0, No",,,,,,"([session_number] = '7' or [session_number] = '8' or [session_number] = '9' or [session_number] = '10' or [session_number] = '11' or [session_number] = '12' or [session_number] = '13' or [session_number] = '14' or [session_number] = '15') and [contact_type] <> '8'",y,,,lifestyle,,
+topic_prog_pa,icare_session_tracking_form,,radio,"Progress check - physical activity","1, Yes | 0, No",,,,,,"([session_number] = '7' or [session_number] = '8' or [session_number] = '9' or [session_number] = '10' or [session_number] = '11' or [session_number] = '12' or [session_number] = '13' or [session_number] = '14' or [session_number] = '15') and [contact_type] <> '8'",y,,,lifestyle,,
+topic_prog_steps,icare_session_tracking_form,,radio,"Progress check - steps","1, Yes | 0, No",,,,,,"([session_number] = '7' or [session_number] = '8' or [session_number] = '9' or [session_number] = '10' or [session_number] = '11' or [session_number] = '12' or [session_number] = '13' or [session_number] = '14' or [session_number] = '15') and [contact_type] <> '8'",y,,,lifestyle,,
+topic_monitoring,icare_session_tracking_form,,radio,"Strategies for improved monitoring (optional)","1, Yes | 0, No",,,,,,"([session_number] = '6' or [session_number] = '7' or [session_number] = '8' or [session_number] = '9' or [session_number] = '10' or [session_number] = '11' or [session_number] = '12' or [session_number] = '13' or [session_number] = '14' or [session_number] = '15') and [contact_type] <> '8'",,,,lifestyle,,
+topic_prog_barriers,icare_session_tracking_form,,radio,"Identification of barriers and challenges to progress (optional)","1, Yes | 0, No",,,,,,"([session_number] = '7' or [session_number] = '8' or [session_number] = '9' or [session_number] = '10' or [session_number] = '11' or [session_number] = '12' or [session_number] = '13' or [session_number] = '14' or [session_number] = '15') and [contact_type] <> '8'",,,,lifestyle,,
+topic_prob_solving,icare_session_tracking_form,,radio,"Problem solving around weight loss and physical activity challenges (optional)","1, Yes | 0, No",,,,,,"([session_number] = '7' or [session_number] = '8' or [session_number] = '9' or [session_number] = '10' or [session_number] = '11' or [session_number] = '12' or [session_number] = '13' or [session_number] = '14' or [session_number] = '15') and [contact_type] <> '8'",,,,lifestyle,,
+topic_glb_viewing,icare_session_tracking_form,,radio,"GLB viewing progress and questions","1, Yes | 0, No",,,,,,"([session_number] = '6' or [session_number] = '7' or [session_number] = '8' or [session_number] = '9') and [contact_type] <> '8'",y,,,lifestyle,,
+topic_goal_review,icare_session_tracking_form,,radio,"Fat and calorie goals review/appropriateness","1, Yes | 0, No",,,,,,"[session_number] = '6' and [contact_type] <> '8'",y,,,lifestyle,,
+topic_id_fat_foods,icare_session_tracking_form,,radio,"Identification of 5 foods high in fat/calories and strategies to eat less (optional)","1, Yes | 0, No",,,,,,"[session_number] = '6' and [contact_type] <> '8'",,,,lifestyle,,
+topic_prog_review,icare_session_tracking_form,,radio,"Progress review","1, Yes | 0, No",,,,,,"([session_number] = '7' or [session_number] = '8' or [session_number] = '9') and [contact_type] <> '8'",y,,,lifestyle,,
+topic_struc_meal_plan,icare_session_tracking_form,,radio,"Structured meal plan/packaged meal use review","1, Yes | 0, No",,,,,,"[session_number] = '7' and [contact_type] <> '8'",y,,,lifestyle,,
+topic_pa_plan,icare_session_tracking_form,,radio,"Physical activity plan","1, Yes | 0, No",,,,,,"[session_number] = '7' and [contact_type] <> '8'",y,,,lifestyle,,
+topic_environ_cues,icare_session_tracking_form,,radio,"Environmental cues activity (optional)","1, Yes | 0, No",,,,,,"[session_number] = '7' and [contact_type] <> '8'",,,,lifestyle,,
+topic_my_plate,icare_session_tracking_form,,radio,"My Plate as model for healthy meals (optional)","1, Yes | 0, No",,,,,,"[session_number] = '7' and [contact_type] <> '8'",,,,lifestyle,,
+topic_slips,icare_session_tracking_form,,radio,"Slips from healthy eating/physical activity (optional)","1, Yes | 0, No",,,,,,"[session_number] = '8' and [contact_type] <> '8'",,,,lifestyle,,
+topic_eating_out,icare_session_tracking_form,,radio,"Eating out problem (optional)","1, Yes | 0, No",,,,,,"[session_number] = '8' and [contact_type] <> '8'",,,,lifestyle,,
+topic_soc_cues,icare_session_tracking_form,,radio,"Problem/positive social cues (optional)","1, Yes | 0, No",,,,,,"[session_number] = '9' and [contact_type] <> '8'",,,,lifestyle,,
+topic_contract,icare_session_tracking_form,,radio,"Personal lifestyle contract (optional)","1, Yes | 0, No",,,,,,"[session_number] = '9' and [contact_type] <> '8'",,,,lifestyle,,
+topic_overview,icare_session_tracking_form,,radio,"Overview of weeks 21-52","1, Yes | 0, No",,,,,,"[session_number] = '9' and [contact_type] <> '8'",y,,,lifestyle,,
+topic_relapse,icare_session_tracking_form,,radio,"Relapse prevention","1, Yes | 0, No",,,,,,"[session_number] = '15'",y,,,lifestyle,,
+topic_home_activities_new,icare_session_tracking_form,,radio,"Review of home activities","1, Yes | 0, No",,,,,,"([session_number] = '1' or [session_number] = '2' or [session_number] = '3' or [session_number] = '4' or [session_number] = '5' or [session_number] = '6' or [session_number] = '7' or [session_number] = '8' or [session_number] = '9' or [session_number] = '10' or [session_number] = '11' or [session_number] = '12' or [session_number] = '13' or [session_number] = '14' or [session_number] = '15') and [contact_type] <> '8'",y,,,lifestyle,,
+topic_sch_nxt_new,icare_session_tracking_form,,radio,"Schedule next visit","1, Yes | 0, No",,,,,,"([session_number] = '1' or [session_number] = '2' or [session_number] = '3' or [session_number] = '4' or [session_number] = '5' or [session_number] = '6' or [session_number] = '7' or [session_number] = '8' or [session_number] = '9' or [session_number] = '10' or [session_number] = '11' or [session_number] = '12' or [session_number] = '13' or [session_number] = '14') and [contact_type] <> '8'",y,,,lifestyle,,
+topic_overview_new,icare_session_tracking_form,,radio,"Overview of next visit","1, Yes | 0, No",,,,,,"([session_number] = '1' or [session_number] = '2' or [session_number] = '3' or [session_number] = '4' or [session_number] = '5' or [session_number] = '6' or [session_number] = '7' or [session_number] = '8' or [session_number] = '9' or [session_number] = '10' or [session_number] = '11' or [session_number] = '12' or [session_number] = '13' or [session_number] = '14') and [contact_type] <> '8'",y,,,lifestyle,,
+topic_questions,icare_session_tracking_form,,radio,"Participant questions","1, Yes | 0, No",,,,,,"([session_number] = '10' or [session_number] = '11' or [session_number] = '12' or [session_number] = '13' or [session_number] = '14' or [session_number] = '15') and [contact_type] <> '8'",y,,,lifestyle,,
+topic_supp_materials,icare_session_tracking_form,,radio,"Supplementary session material","1, Yes | 0, No",,,,,,"([session_number] = '10' or [session_number] = '11' or [session_number] = '12' or [session_number] = '13' or [session_number] = '14' or [session_number] = '15') and [contact_type] <> '8'",y,,,lifestyle,,
+topic_maint_plan,icare_session_tracking_form,,radio,"Maintenance plan(optional)","1, Yes | 0, No",,,,,,"([session_number] = '9' or [session_number] = '10' or [session_number] = '11' or [session_number] = '12' or [session_number] = '13' or [session_number] = '14' or [session_number] = '15') and [contact_type] <> '8'",,,,lifestyle,,
+review_of_home,icare_session_tracking_form,<u>Closing:</u>,radio,"Review of Home activities","1, Yes | 2, No",,,,,,,,,,clolsing,,
+sch_next_visit,icare_session_tracking_form,,radio,"Schedule next visit","1, Yes | 2, No",,,,,,,,,,clolsing,,
+overview_of_nex_visit,icare_session_tracking_form,,radio,"Overview of next visit","1, Yes | 2, No",,,,,,,,,,clolsing,,
+sm_data_date,icare_self_monitoring_data," <font color=blue><font size=3><center>Online Tracking</font>",text,"Today's date",,,date_mdy,2014-11-18,2019-12-30,,,y,,,,,
+sm_data_available,icare_self_monitoring_data,,radio,"Was self-monitoring data available for the past 7 days?","0, No | 1, Yes",,,,,,,y,,,,,
+sm_steps_daily_avg,icare_self_monitoring_data,,text,"Average steps per day (past 7 days)",,"[If not available, leave blank]",number,,,,"[sm_data_available] = '1'",,,,,,
+sm_weight,icare_self_monitoring_data,"<font size = 2><Font color = blue><center>Starting Week 7 </center><p><center>Enter Weight and PA Minutes<f/font></center>",text,"Most recent weight (past 7 days)",,"[Use decimal format, ex. 210.3] [If not available, leave blank]",number_1dp,,,,,,,,,,
+sm_pa_minutes_total,icare_self_monitoring_data,,text,"Total weekly physical activity minutes (past 7 days)",,"[If not available, leave blank]",number,,,,,,,,,,
+no_pa_confirm,icare_self_monitoring_data,,truefalse,"<font color=green>To be completed by HC:</font color> The patient did not perform moderate physical activity in the past week.",,,,,,,"[sm_pa_minutes_total] = '' or [sm_pa_minutes_total] = '0'",,,,,,
+weight_data_via,icare_self_monitoring_data,,radio,"Weight data via:","1, Patient self-monitoring online | 2, Report to Health Coach | 3, Measured at I-CARE Session",,,,,,"[sm_weight] > 1",,,,,,
+pa_minutes_data_via,icare_self_monitoring_data,,radio,"PA minutes data via:","1, Patient self-monitoring online | 2, Report to Health Coach",,,,,,"[sm_weight] > 1",,,,,,
+np_session_date,icare_non_protocol_session_form,,text,"Session Date",,,date_dmy,,,,,y,,,,,
+np_contact_reason,icare_non_protocol_session_form,,radio,"Reason for contact:","2, Session - Supplementary (>10 min) | 3, Brief check-in (< 10 min)",,,,,,,y,,,,,
+np_intiated_by,icare_non_protocol_session_form,,radio,"Contact initiated by:","1, Coach | 2, Participant",,,,,,,y,,,,,
+np_contact_type,icare_non_protocol_session_form,,radio,"Type of Contact","1, In person | 2, Phone | 3, My Health Online | 4, E-mail | 5, Text | 6, Mail | 7, Blue jeans | 8, None, Session not completed",,,,,,,y,,,,,
+np_text_type,icare_non_protocol_session_form,,radio,"Text message content:","1, Steps | 2, MyFitnessPal | 3, Weight | 4, Home Activities | 5, GLB Videos | 6, Other",,,,,,"[np_contact_type] = '5'",,,,,,
+np_other_text,icare_non_protocol_session_form,,text,"Specify the content of the text message:",,,,,,,"[np_text_type] = '6'",,,,,,
+np_accompanied,icare_non_protocol_session_form,,yesno,"Did someone accompany the patient to the session?",,,,,,,"[np_contact_type] = '1'",y,,,,,
+np_phq9_1,icare_non_protocol_session_form," <font color=blue><font size=3><center>PHQ9</font color></font size></center>
+
+Ask the participant: ""Over the <i><b><u>LAST TWO WEEKS,</u> how often have you been bothered by any of the following?""</i></b> (Record the following in the appropriate place in each row, depending on their answer). ",radio,"Little interest or pleasure in doing things","0, Not at All | 1, Several Days | 2, More than Half the Days | 3, Nearly Every Day",,,,,,"[np_contact_type] = '1' or [np_contact_type] = '2' or [np_contact_type] = '7'",,,,np_phq9,,
+np_phq9_2,icare_non_protocol_session_form,,radio,"Feeling down, depressed or hopeless","0, Not at All | 1, Several Days | 2, More than Half the Days | 3, Nearly Every Day",,,,,,"[np_contact_type] = '1' or [np_contact_type] = '2' or [np_contact_type] = '7'",,,,np_phq9,,
+np_phq9_3,icare_non_protocol_session_form,,radio,"Trouble falling or staying asleep, or sleeping too much","0, Not at All | 1, Several Days | 2, More than Half the Days | 3, Nearly Every Day",,,,,,"[np_contact_type] = '1' or [np_contact_type] = '2' or [np_contact_type] = '7'",,,,np_phq9,,
+np_phq9_4,icare_non_protocol_session_form,,radio,"Feeling tired of having little energy","0, Not at All | 1, Several Days | 2, More than Half the Days | 3, Nearly Every Day",,,,,,"[np_contact_type] = '1' or [np_contact_type] = '2' or [np_contact_type] = '7'",,,,np_phq9,,
+np_phq9_5,icare_non_protocol_session_form,,radio,"Poor appetite or overeating","0, Not at All | 1, Several Days | 2, More than Half the Days | 3, Nearly Every Day",,,,,,"[np_contact_type] = '1' or [np_contact_type] = '2' or [np_contact_type] = '7'",,,,np_phq9,,
+np_phq9_6,icare_non_protocol_session_form,,radio,"Feeling bad about yourself - or that you are a failure or have let yourself or your family down","0, Not at All | 1, Several Days | 2, More than Half the Days | 3, Nearly Every Day",,,,,,"[np_contact_type] = '1' or [np_contact_type] = '2' or [np_contact_type] = '7'",,,,np_phq9,,
+np_phq9_7,icare_non_protocol_session_form,,radio,"Trouble concentrating on things, such as reading the newspaper or watching television","0, Not at All | 1, Several Days | 2, More than Half the Days | 3, Nearly Every Day",,,,,,"[np_contact_type] = '1' or [np_contact_type] = '2' or [np_contact_type] = '7'",,,,np_phq9,,
+np_phq9_8,icare_non_protocol_session_form,,radio,"Moving or speaking so slowly that other people could have noticed. Or the opposite - being so fidgety or restless that you have been moving around a lot more than usual","0, Not at All | 1, Several Days | 2, More than Half the Days | 3, Nearly Every Day",,,,,,"[np_contact_type] = '1' or [np_contact_type] = '2' or [np_contact_type] = '7'",,,,np_phq9,,
+np_phq9_9,icare_non_protocol_session_form,,radio,"Thoughts that you would be better off dead, or of hurting yourself","0, Not at All | 1, Several Days | 2, More than Half the Days | 3, Nearly Every Day",,,,,,"[np_contact_type] = '1' or [np_contact_type] = '2' or [np_contact_type] = '7'",,,,np_phq9,,
+np_phq9_score,icare_non_protocol_session_form,,calc,"PHQ-9 Score",[phq9_1]+[phq9_2]+[phq9_3]+[phq9_4]+[phq9_5]+[phq9_6]+[phq9_7]+[phq9_8]+[phq9_9],,,,,,"[np_contact_type] = '1' or [np_contact_type] = '2' or [np_contact_type] = '7'",,,,,,
+np_mood_topics,icare_non_protocol_session_form,,checkbox,"I-CARE Content (Mood):
+
+Please indicate all of the following topics that were covered, if any.
+","1, PHQ-9 | 2, Psychiatric medication adherence | 3, Other mood topic",,,,,,,,,,,,
+np_lifestyle_topics,icare_non_protocol_session_form,,checkbox,"I-CARE Content (Lifestyle):
+
+Please indicate all of the following topics that were covered, if any.","1, Technology support/instruction | 2, Progress check - self- monitoring | 3, Progress check - weight | 4, Progress check - physical activity | 5, Progress check - steps | 6, Strategies for improved monitoring | 7, Identification of barriers and challenges to progress | 8, Problem solving around weight loss and physical activity challenges | 9, Review of GLB material | 10, Participant questions | 11, Maintenance plan | 12, Encouragement message",,,,,,,,,,,,
+np_glb_session_viewed,icare_non_protocol_session_form,,checkbox,"GLB sessions viewed:","0, Not asked | 1, No sessions viewed | 2, Session 1 | 3, Session 2 | 4, Session 3 | 5, Session 4 | 6, Session 5 | 7, Session 6 | 8, Session 8 | 9, Session 9 | 10, Session 10 | 11, Session 11 | 12, Session 12",,,,,,,,,,,,
+np_glb_summaries_read,icare_non_protocol_session_form,,checkbox,"GLB summaries read:","0, Not asked | 1, No GLB summary read | 2, GLB summary 1 | 3, GLB summary 2 | 4, GLB summary 3 | 5, GLB summary 4",,,,,,,,,,,,
+closeout_type,icare_closeout_form,,radio,"Time of Closeout","1, Early Termination | 2, End of Intervention Period",,,,,,,,,,,,
+termination_date,icare_closeout_form,,text,"Date of Early Termination",,,date_mdy,,,,,,,,,,
+final_visit,icare_closeout_form,,text,"Final Protocolized Visit Completed",,,date_mdy,,,,,,,,,,
+termination_by,icare_closeout_form,,radio,"Terminated per:","1, Patient request | 2, Study Investigators",,,,,,,,,,,,
+termination_reason,icare_closeout_form,,checkbox,"Reason for early termination","1, Never started | 2, Passive withdrawal | 3, Not helping/doesn't like PST | 4, Not helping/doesn't like weight loss and/or physical activity component | 5, Emotional distress with weight loss activities | 6, Time constraints | 7, Other",,,,,,,,,,,,
+other_reason,icare_closeout_form,,notes,"Other reason specify:",,,,,,,"[termination_reason(7)] = '1'",,,,,,
+reason_passive,icare_closeout_form,,checkbox,"Reason for passive withdrawal","1, Medical issues | 2, Employment issues | 3, Relationship issues | 4, Caregiving issues | 5, Busyness in general | 6, Angry at PAMF | 7, Other",,,,,,"[termination_reason(2)] = '1'",,,,,,
+other_passive,icare_closeout_form,,notes,"Other reason for passive withdrawal specify:",,,,,,,"[reason_passive(7)] = '1'",,,,,,
