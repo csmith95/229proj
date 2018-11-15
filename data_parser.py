@@ -14,8 +14,7 @@ from sklearn.model_selection import train_test_split
 class DataParser():
 
 	# input_paths should be a list of paths to csv files
-	# variables is a list of features the parser should load. If none provided, parser includes all variables
-	def __init__(self, input_files, variables=None):
+	def __init__(self, input_files, joinOn=['subNum']):
 		temp_data_frames = []
 		for input_file in input_files:
 			try:
@@ -31,14 +30,16 @@ class DataParser():
 		if len(temp_data_frames) == 0:
 			raise RuntimeError('No data was successfully loaded :( Aborting')
 
-		# after loading data frames, join by subNum (subject number)
+		# after loading data frames, join frames using the keys (note this is an ordered op)
+		# the frames are joined based on the keys in the order the keys are given. 
+		# so frame1 is joined to frame2 using joinOn[0], then this frame to frame3 using joinOn[1], etc.
 		self.data_frame = copy.deepcopy(temp_data_frames[0])
-		for frame in temp_data_frames[1:]:
-			self.data_frame = self.data_frame.join(frame, on='subNum')
+		for key, frame in zip(joinOn, temp_data_frames[1:]) :
+			self.data_frame = self.data_frame.join(frame, on=key)
 
 		print('Successfully joined dataframes by subject number\n')
 
-	def get_data_splits(self, train_vars, label_var=None, train_split=0.7):
+	def get_data_splits(self, train_vars, label_var=None, train_split=0.7, print_input_vars=False):
 		# make sure no overlap in vars
 		if label_var in train_vars:
 			raise ValueError('Label variable {} found in train vars'.format(label_var))
@@ -65,18 +66,24 @@ class DataParser():
 		train_matrix = df.drop(columns=label_var).values
 		labels_matrix = df.filter(regex=label_var).values
 		m_train, n = train_matrix.shape
-		print('Data has {} input variables:'.format(n))
 		input_variables = list(df.drop(columns=label_var).columns)
-		for i, var in enumerate(input_variables):
-			print('\t ({}) {}'.format(i+1, var))
+		if (print_input_vars):
+			print('Data has {} input variables:'.format(n))
+			for i, var in enumerate(input_variables):
+				print('\t ({}) {}'.format(i+1, var))
 		m_labels, _ = labels_matrix.shape
 
 		print('\nOriginal # of rows in train matrix: {}'.format(m_train))
 		print('Original # of rows in labels matrix: {}'.format(m_labels))
 		print('Getting rid of invalid entries (like NaN)...')
-		valid_indices = ~np.isnan(labels_matrix).reshape((m_labels,))
-		train_matrix = train_matrix[valid_indices,:]
-		labels_matrix = labels_matrix[valid_indices]
+		# first drop if label is nan
+		valid_label_indices = ~np.isnan(labels_matrix).reshape((m_labels,))
+		train_matrix = train_matrix[valid_label_indices,:]
+		labels_matrix = labels_matrix[valid_label_indices]
+		# then drop if any input features is nan
+		valid_input_indices = ~np.isnan(train_matrix).any(axis=1)
+		train_matrix = train_matrix[valid_input_indices,:]
+		labels_matrix = labels_matrix[valid_input_indices]
 		m_train, n = train_matrix.shape
 		m_labels, _ = labels_matrix.shape
 		print('Cleaned # of rows in train matrix: {}'.format(m_train))
