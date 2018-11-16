@@ -35,17 +35,15 @@ class DataParser():
 		# so frame1 is joined to frame2 using joinOn[0], then this frame to frame3 using joinOn[1], etc.
 		self.data_frame = copy.deepcopy(temp_data_frames[0])
 		for keys, frame in zip(joinOn, temp_data_frames[1:]):
-			print(keys)
-			print(frame)
 			self.data_frame = pd.merge(self.data_frame, frame, on=keys)
-			print(self.data_frame)
-		return
-
-		print(self.data_frame)
 
 		print('Successfully joined dataframes by the following keys:', joinOn)
 
-	def get_data_splits(self, train_vars, label_var=None, train_split=0.7, print_input_vars=False):
+	def filter_data(self, key, value):
+		self.data_frame = self.data_frame.loc[self.data_frame[key] == value]
+		print('Filtered data using key {} == {}'.format(key, value))
+
+	def get_data_splits(self, train_vars, label_var=None, train_split=0.7, print_input_vars=True):
 		# make sure no overlap in vars
 		if label_var in train_vars:
 			raise ValueError('Label variable {} found in train vars'.format(label_var))

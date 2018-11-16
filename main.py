@@ -6,6 +6,8 @@ import argparse
 from sklearn.cluster import KMeans
 from tabulate import tabulate
 import hypertools as hype
+import pandas as pd
+from sklearn.neural_network import MLPRegressor
 
 ALL_BIOTYPES = ['rumination', 'anxious_avoid', 'negative_bias', 'con_threat_dysreg', \
 					'noncon_threat_dysreg', 'anhedonia', 'cog_dyscontrol', 'inattention'] 
@@ -20,14 +22,13 @@ if __name__ == '__main__':
 		# Linear Regression Tasks
 			# (i) 'biotype' --> fits model to predict biotype scores from fMRI
 			# (ii) 'emotion' --> fits model to predict average emotional recognition accuracy using fMRI
-				# in progess (Conner)
-			# (iii) depression -> fits model to predict score on depression indicators scl
+			# (iii) depression -> fits model to predict score on depression indicators using fMRI
 				# TODO (haven't started)
 		# Clustering Tasks
 			# None (just breaks data into n_clusters)
 			# TODO: interpret these results?
 		# Neural Net Tasks
-			# TODO
+			# Can do the same tasks as linear regression (biotype/emotion)
 			# We can try to re-do the linear regression tasks using a neural net. 
 			# Also, This will probably be our best shot for analyzing the data over time. 
 			# We can use an LSTM to capture some patterns.
@@ -46,19 +47,23 @@ if __name__ == '__main__':
 			dataParser = DataParser(input_files=['./data/Neuroimaging/Reduced_biotype_imaging_data_s1.csv'])
 			all_MSE = []
 			for i, biotype in enumerate(args.biotypes.split()):
-				print()
 				biotype_variable_name = '{}_type_score'.format(biotype)
-				X_train, X_test, y_train, y_test, input_variables = dataParser.get_data_splits(train_vars=['Act', 'PPI'], \
+				X_train, X_test, y_train, y_test, input_variables = dataParser.get_data_splits(train_vars=['Act', 'PPI', 'RS_'], \
 															label_var=biotype_variable_name, print_input_vars=(i==0))
 				model = linear_model.LinearRegression()
 				model.fit(X_train, y_train)
-				if (args.show_coeffs):
+				if args.show_coeffs:
 					coefficient_list = model.coef_.tolist()[0]
 					table_input = [[var, c] for var, c in zip(input_variables, coefficient_list)]
 					print(tabulate(table_input, headers=['Variable', 'Optimal Coefficient']))
 				y_pred = model.predict(X_test)
 				all_MSE.append(mean_squared_error(y_test, y_pred))
-				print('\nMean squared error for '+biotype+': %.2f\n' % all_MSE[-1])
+				print('\nMean squared error for '+biotype+': %.2f' % all_MSE[-1])
+
+				# Error analysis: see what we would get by predicting the mean accuracy
+				mean_acc = np.mean(y_train)
+				mean_pred = mean_acc * np.ones_like(y_test)
+				print('"Guessing" mean squared error: %.2f\n' % mean_squared_error(y_test, mean_pred))
 
 			print('-'*15 + 'Summary' + '-'*15)
 			for biotype, mse in zip(args.biotypes.split(), all_MSE):
@@ -68,7 +73,8 @@ if __name__ == '__main__':
 			dataParser = DataParser(input_files=['./data/Neuroimaging/Reduced_biotype_imaging_data_s1.csv',\
 												'./data/Webneuro/subNum_login_mapping.csv',\
 												'./data/Webneuro/WebNeuro_Data_2018-10-21_21-54-37.csv' ], joinOn=['subNum', 'login'])
-			X_train, X_test, y_train, y_test, input_variables = dataParser.get_data_splits(train_vars=['Act', 'PPI'], \
+			dataParser.filter_data(key='suffix', value=1)
+			X_train, X_test, y_train, y_test, input_variables = dataParser.get_data_splits(train_vars=['Act'], \
 															label_var='getscp', print_input_vars=True)
 			model = linear_model.LinearRegression()
 			model.fit(X_train, y_train)
@@ -77,7 +83,13 @@ if __name__ == '__main__':
 				table_input = [[var, c] for var, c in zip(input_variables, coefficient_list)]
 				print(tabulate(table_input, headers=['Variable', 'Optimal Coefficient']))
 			y_pred = model.predict(X_test)
-			print('\nMean squared error: %.2f\n' % mean_squared_error(y_test, y_pred))
+			print('\nModel Mean squared error: %.2f' % mean_squared_error(y_test, y_pred))
+
+			# Error analysis: see what we would get by predicting the mean accuracy
+			mean_acc = np.mean(y_train)
+			mean_pred = mean_acc * np.ones_like(y_test)
+			print('"Guessing" mean squared error: %.2f\n' % mean_squared_error(y_test, mean_pred))
+
 		else:
 			print("Provide a task for linear regression. See options in main.py")
 
@@ -88,7 +100,7 @@ if __name__ == '__main__':
 
 		# this line does separate KMeans clustering than what sklearn does below this
 		# this is just an example of how to use the hype graphing lib
-		# graph = hype.plot(X, '.', n_clusters=8, legend=True, show=False) # plot clusters
+		graph = hype.plot(X, '.', n_clusters=8, legend=True) # plot clusters
 
 		# KMeans using sklearn
 		model = KMeans(n_clusters=args.n_clusters).fit(X)
@@ -97,5 +109,56 @@ if __name__ == '__main__':
 		table_input = [ [var[:4]+'...'+var[-6:]] + center_values[i] for i, var in enumerate(input_variables)]
 		headers = ['Variable'] + ['Cluster {}'.format(x+1) for x in range(args.n_clusters)]
 		print(tabulate(table_input, headers=headers))
+	elif args.model == 'neural':
+		model = MLPRegressor(hidden_layer_sizes=(15, 5, 5), alpha=1e-5, max_iter=5000)
+		print('Training a Neural Network Model...')
+		if args.task == 'biotype':
+			dataParser = DataParser(input_files=['./data/Neuroimaging/Reduced_biotype_imaging_data_s1.csv'])
+			all_MSE = []
+			for i, biotype in enumerate(args.biotypes.split()):
+				biotype_variable_name = '{}_type_score'.format(biotype)
+				X_train, X_test, y_train, y_test, input_variables = dataParser.get_data_splits(train_vars=['Act', 'PPI', 'RS_'], \
+															label_var=biotype_variable_name, print_input_vars=(i==0))
+				model.fit(X_train, y_train)
+				if args.show_coeffs:
+					coefficient_list = model.coef_.tolist()[0]
+					table_input = [[var, c] for var, c in zip(input_variables, coefficient_list)]
+					print(tabulate(table_input, headers=['Variable', 'Optimal Coefficient']))
+				y_pred = model.predict(X_test)
+				all_MSE.append(mean_squared_error(y_test, y_pred))
+				print('\nMean squared error for '+biotype+': %.2f' % all_MSE[-1])
+
+				# Error analysis: see what we would get by predicting the mean accuracy
+				mean_acc = np.mean(y_train)
+				mean_pred = mean_acc * np.ones_like(y_test)
+				print('"Guessing" mean squared error: %.2f\n' % mean_squared_error(y_test, mean_pred))
+
+			print('-'*15 + 'Summary' + '-'*15)
+			for biotype, mse in zip(args.biotypes.split(), all_MSE):
+				print('{} MSE: {}'.format(biotype, mse))
+		elif args.task == 'emotion':
+			# file 1 contains fMRIs, file 2 contains subnum->login mapping, file 3 contains login->emotion recognition scores
+			dataParser = DataParser(input_files=['./data/Neuroimaging/Reduced_biotype_imaging_data_s1.csv',\
+												'./data/Webneuro/subNum_login_mapping.csv',\
+												'./data/Webneuro/WebNeuro_Data_2018-10-21_21-54-37.csv' ], joinOn=['subNum', 'login'])
+			dataParser.filter_data(key='suffix', value=1)
+			X_train, X_test, y_train, y_test, input_variables = dataParser.get_data_splits(train_vars=['Act'], \
+															label_var='getscp', print_input_vars=True)
+			model.fit(X_train, y_train.reshape((-1,)))
+			if (args.show_coeffs):
+				coefficient_list = model.coef_.tolist()[0]
+				table_input = [[var, c] for var, c in zip(input_variables, coefficient_list)]
+				print(tabulate(table_input, headers=['Variable', 'Optimal Coefficient']))
+			y_pred = model.predict(X_test)
+			print('\nModel Mean squared error: %.2f' % mean_squared_error(y_test, y_pred))
+
+			# Error analysis: see what we would get by predicting the mean accuracy
+			mean_acc = np.mean(y_train)
+			mean_pred = mean_acc * np.ones_like(y_test)
+			print('"Guessing" mean squared error: %.2f\n' % mean_squared_error(y_test, mean_pred))
+
+		else:
+			print("Provide a task for neural net. See options in main.py")
+
 	else:
 		print('Plz provide a model arg')
