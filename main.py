@@ -10,6 +10,7 @@ from tabulate import tabulate
 import hypertools as hype
 import pandas as pd
 from sklearn.neural_network import MLPRegressor
+import pdb
 
 ALL_BIOTYPES = ['rumination', 'anxious_avoid', 'negative_bias', 'con_threat_dysreg', \
                     'noncon_threat_dysreg', 'anhedonia', 'cog_dyscontrol', 'inattention']
@@ -25,7 +26,7 @@ if __name__ == '__main__':
             # (i) 'biotype' --> fits model to predict biotype scores from fMRI
             # (ii) 'emotion' --> fits model to predict average emotional recognition accuracy using fMRI
                 # in progess (Conner)
-            # (iii) depression -> fits model to predict score on depression indicators scl
+            # (iii) 'depression' -> fits model to predict score on depression indicators scl
                 # TODO (haven't started)
         # Clustering Tasks
             # None (just breaks data into n_clusters)
@@ -82,6 +83,68 @@ if __name__ == '__main__':
                 print(tabulate(table_input, headers=['Variable', 'Optimal Coefficient']))
             y_pred = model.predict(X_test)
             print('\nMean squared error: %.2f\n' % mean_squared_error(y_test, y_pred))
+        elif args.task == 'depression_biotypes':
+            # predict depression scores from biotypes
+            dataParser = DataParser(input_files=['./data/Neuroimaging/Reduced_biotype_imaging_data_s1.csv',\
+                                                 './data/depression_scores.csv'])
+            X_train, X_test, y_train, y_test, input_variables = dataParser.get_data_splits(train_vars=['Act'], \
+                                                            label_var='depression_score', print_input_vars=True)
+            model = linear_model.LinearRegression(normalize = True)
+            model.fit(X_train, y_train)
+            if (args.show_coeffs):
+                coefficient_list = model.coef_.tolist()[0]
+                table_input = [[var, c] for var, c in zip(input_variables, coefficient_list)]
+                print(tabulate(table_input, headers=['Variable', 'Optimal Coefficient']))
+            y_pred = model.predict(X_test)
+            print('\nMean squared error: %.2f\n' % mean_squared_error(y_test, y_pred))
+
+            mean_acc = np.mean(y_train)
+            mean_pred = mean_acc * np.ones_like(y_test)
+            print('"Guessing" mean squared error: %.2f\n' % mean_squared_error(y_test, mean_pred))
+
+        elif args.task == 'depression_webneuro':
+            # predict depression scores from WebNeuro
+            dataParser = DataParser(input_files=['./data/Neuroimaging/Reduced_biotype_imaging_data_s1.csv'])
+            df = dataParser.data_frame
+            df = df.dropna()
+            depression_score_df = pd.read_csv('./data/depression_scores.csv')
+            merged = df.merge(depression_score_df, 'inner', on='subNum')
+
+            mean_score = merged['depression_score'].mean()
+            y_labels = [1 if x > mean_score else 0 for x in merged['depression_score']]
+            y = merged['depression_score']
+            #X = merged.loc[:, [b + '_type_score' for b in ALL_BIOTYPES]]
+            X = merged.loc[:, [c for c in merged.columns.values if c[:2] in ['Ac', 'PP', 'RS']]]
+
+            wanted_vars = list(pd.read_excel('./data/Webneuro/WebNeuro Data Dictionary.xlsx').VariableLabel)
+            webneuro = pd.read_csv('./data/Webneuro/WebNeuro_Data_2018-10-21_21-54-37.csv')
+            mapping = pd.read_csv('./data/Webneuro/subNum_login_mapping.csv')
+            mapping = mapping.dropna()
+            webneuro = webneuro.merge(mapping, 'inner', on='login').merge(depression_score_df, 'inner', on='subNum').dropna()
+            webneuro['Gender'] = (webneuro['Gender'] == 'FEMALE').astype('int')
+            webneuro = webneuro.select_dtypes(['number']).drop('suffix', axis=1)
+            X = webneuro.drop('depression_score', axis=1)
+            y = webneuro['depression_score']
+
+            #normalize
+            X = (X - X.min()) / (X.max() - X.min())
+            y = (y - y.min()) / (y.max() - y.min())
+
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+
+            model = linear_model.LinearRegression(normalize = True)
+            model.fit(X_train, y_train)
+            if (args.show_coeffs):
+                coefficient_list = model.coef_.tolist()[0]
+                table_input = [[var, c] for var, c in zip(input_variables, coefficient_list)]
+                print(tabulate(table_input, headers=['Variable', 'Optimal Coefficient']))
+            y_pred = model.predict(X_test)
+            print('\nMean squared error: %.4f\n' % mean_squared_error(y_test, y_pred))
+
+            mean_acc = np.mean(y_train)
+            mean_pred = mean_acc * np.ones_like(y_test)
+            print('"Guessing" mean squared error: %.4f\n' % mean_squared_error(y_test, mean_pred))
+
         else:
             print("Provide a task for linear regression. See options in main.py")
 
@@ -202,6 +265,66 @@ if __name__ == '__main__':
         # model = linear_model.LinearRegression()
         # model.fit(X, y_train)
 
+    elif args.model == 'svm':
+        if args.task == 'depression_biotypes':
+            # prediction depression scores from biotypes
+            dataParser = DataParser(input_files=['./data/Neuroimaging/Reduced_biotype_imaging_data_s1.csv',\
+                                                 './data/depression_scores.csv'])
+            X_train, X_test, y_train, y_test, input_variables = dataParser.get_data_splits(train_vars=['Act'], \
+                                                            label_var='depression_score', print_input_vars=True)
+            model = svm.SVR()
+            model.fit(X_train, y_train)
+            if (args.show_coeffs):
+                coefficient_list = model.coef_.tolist()[0]
+                table_input = [[var, c] for var, c in zip(input_variables, coefficient_list)]
+                print(tabulate(table_input, headers=['Variable', 'Optimal Coefficient']))
+            y_pred = model.predict(X_test)
+            print('\nMean squared error: %.2f\n' % mean_squared_error(y_test, y_pred))
 
+            mean_acc = np.mean(y_train)
+            mean_pred = mean_acc * np.ones_like(y_test)
+            print('"Guessing" mean squared error: %.2f\n' % mean_squared_error(y_test, mean_pred))
+        elif args.task == 'depression_webneuro':
+            # predict depression scores from WebNeuro
+            dataParser = DataParser(input_files=['./data/Neuroimaging/Reduced_biotype_imaging_data_s1.csv'])
+            df = dataParser.data_frame
+            df = df.dropna()
+            depression_score_df = pd.read_csv('./data/depression_scores.csv')
+            merged = df.merge(depression_score_df, 'inner', on='subNum')
+
+            mean_score = merged['depression_score'].mean()
+            y_labels = [1 if x > mean_score else 0 for x in merged['depression_score']]
+            y = merged['depression_score']
+            #X = merged.loc[:, [b + '_type_score' for b in ALL_BIOTYPES]]
+            X = merged.loc[:, [c for c in merged.columns.values if c[:2] in ['Ac', 'PP', 'RS']]]
+
+            wanted_vars = list(pd.read_excel('./data/Webneuro/WebNeuro Data Dictionary.xlsx').VariableLabel)
+            webneuro = pd.read_csv('./data/Webneuro/WebNeuro_Data_2018-10-21_21-54-37.csv')
+            mapping = pd.read_csv('./data/Webneuro/subNum_login_mapping.csv')
+            mapping = mapping.dropna()
+            webneuro = webneuro.merge(mapping, 'inner', on='login').merge(depression_score_df, 'inner', on='subNum').dropna()
+            webneuro['Gender'] = (webneuro['Gender'] == 'FEMALE').astype('int')
+            webneuro = webneuro.select_dtypes(['number']).drop('suffix', axis=1)
+            X = webneuro.drop('depression_score', axis=1)
+            y = webneuro['depression_score']
+
+            #normalize
+            X = (X - X.min()) / (X.max() - X.min())
+            y = (y - y.min()) / (y.max() - y.min())
+
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=7)
+
+            model = svm.SVR()
+            model.fit(X_train, y_train)
+            if (args.show_coeffs):
+                coefficient_list = model.coef_.tolist()[0]
+                table_input = [[var, c] for var, c in zip(input_variables, coefficient_list)]
+                print(tabulate(table_input, headers=['Variable', 'Optimal Coefficient']))
+            y_pred = model.predict(X_test)
+            print('\nMean squared error: %.4f\n' % mean_squared_error(y_test, y_pred))
+
+            mean_acc = np.mean(y_train)
+            mean_pred = mean_acc * np.ones_like(y_test)
+            print('"Guessing" mean squared error: %.4f\n' % mean_squared_error(y_test, mean_pred))   
     else:
         print('Plz provide a model arg')
