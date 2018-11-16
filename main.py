@@ -20,8 +20,17 @@ if __name__ == '__main__':
 		# Linear Regression Tasks
 			# (i) 'biotype' --> fits model to predict biotype scores from fMRI
 			# (ii) 'emotion' --> fits model to predict average emotional recognition accuracy using fMRI
+				# in progess (Conner)
+			# (iii) depression -> fits model to predict score on depression indicators scl
+				# TODO (haven't started)
 		# Clustering Tasks
 			# None (just breaks data into n_clusters)
+			# TODO: interpret these results?
+		# Neural Net Tasks
+			# TODO
+			# We can try to re-do the linear regression tasks using a neural net. 
+			# Also, This will probably be our best shot for analyzing the data over time. 
+			# We can use an LSTM to capture some patterns.
 	parser.add_argument('--task', type=str, help='prediction task')
 	parser.add_argument('--biotypes', type=str, help='reduced biotypes to consider as labels \
 													when fitting linear regression',

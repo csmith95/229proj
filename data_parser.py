@@ -34,10 +34,16 @@ class DataParser():
 		# the frames are joined based on the keys in the order the keys are given. 
 		# so frame1 is joined to frame2 using joinOn[0], then this frame to frame3 using joinOn[1], etc.
 		self.data_frame = copy.deepcopy(temp_data_frames[0])
-		for key, frame in zip(joinOn, temp_data_frames[1:]) :
-			self.data_frame = self.data_frame.join(frame, on=key)
+		for keys, frame in zip(joinOn, temp_data_frames[1:]):
+			print(keys)
+			print(frame)
+			self.data_frame = pd.merge(self.data_frame, frame, on=keys)
+			print(self.data_frame)
+		return
 
-		print('Successfully joined dataframes by subject number\n')
+		print(self.data_frame)
+
+		print('Successfully joined dataframes by the following keys:', joinOn)
 
 	def get_data_splits(self, train_vars, label_var=None, train_split=0.7, print_input_vars=False):
 		# make sure no overlap in vars
