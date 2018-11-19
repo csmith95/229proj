@@ -178,7 +178,7 @@ if __name__ == '__main__':
             mapping = mapping.dropna()
             webneuro = webneuro.merge(mapping, 'inner', on='login').merge(depression_score_df, 'inner', on='subNum').dropna()
             webneuro['Gender'] = (webneuro['Gender'] == 'FEMALE').astype('int')
-            webneuro = webneuro.select_dtypes(['number']).drop('suffix', axis=1)
+            webneuro = webneuro.groupby(['subNum']).mean().drop('suffix', axis=1)
             X = webneuro.drop('depression_score', axis=1)
             y = webneuro['depression_score']
         if features == 'medication':
@@ -191,11 +191,32 @@ if __name__ == '__main__':
             y = med_dummies['depression_score']
             X = med_dummies.drop('depression_score', axis=1).clip(upper=1)
             print('Successfully obtained medication information.')
+        if features == 'all':
+            wanted_vars = list(pd.read_excel('./data/Webneuro/WebNeuro Data Dictionary.xlsx').VariableLabel)
+            webneuro = pd.read_csv('./data/Webneuro/WebNeuro_Data_2018-10-21_21-54-37.csv')
+            mapping = pd.read_csv('./data/Webneuro/subNum_login_mapping.csv')
+            mapping = mapping.dropna()
+            webneuro = webneuro.merge(mapping, 'inner', on='login').merge(depression_score_df, 'inner',
+                                                          on='subNum').dropna().drop('suffix', axis=1)
+            webneuro['Gender'] = (webneuro['Gender'] == 'FEMALE').astype('int')
+            webneuro =webneuro.groupby(['subNum'], as_index=False).mean().drop('suffix', axis=1)
+
+            medication = pd.read_csv('./data/Medication/Medication_Data_share.csv').drop('24_month_arm_1',
+                                                                                         axis=1).dropna()
+            # filter out medications ended before start of ENGAGE
+            medication = medication[medication.END_DATE_Ndays_ENGAGE <= 0][['subNum', 'description']]
+            medication['description'] = medication['description'].apply(lambda s: s.split(' ')[0])
+            med_dummies = pd.get_dummies(medication, columns=['description']).groupby(['subNum'], as_index=False).sum()
+            all = med_dummies.merge(webneuro, 'inner', on='subNum')
+            X = all.drop(['subNum', 'depression_score'], axis=1)
+            y = all['depression_score']
+
 
 
 
         #normalize
         X = StandardScaler().fit_transform(X)
+        y = (y - y.min()) / (y.max() - y.min())
 
         mse_model, mse_baseline = [], []
         num_trials = 10
@@ -210,6 +231,8 @@ if __name__ == '__main__':
             lr.fit(X_train, y_train)
             clf = svm.SVR(C=C)
             clf.fit(X_train, y_train)
+            nn = MLPRegressor(hidden_layer_sizes=(50, 50, 10, 10), solver='lbfgs', alpha=1e-6, max_iter=10000000)
+            nn.fit(X_train, y_train)
 
             pred = clf.predict(X_test)
             mean_y_train = y_train.mean()
