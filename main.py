@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 from data_parser import *
 from sklearn import datasets, linear_model, svm
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.feature_selection import SelectKBest, f_regression
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.model_selection import cross_val_score, train_test_split
 from sklearn.metrics import mean_squared_error, accuracy_score
@@ -215,8 +216,12 @@ if __name__ == '__main__':
 
 
         #normalize
-        X = StandardScaler().fit_transform(X)
-        y = (y - y.min()) / (y.max() - y.min())
+        X = MinMaxScaler().fit_transform(X)
+        y = np.asarray((y - y.min()) / (y.max() - y.min())).astype('float')
+
+        # select features
+
+        X = SelectKBest(f_regression, k=20).fit_transform(X, y)
 
         mse_model, mse_baseline = [], []
         num_trials = 10
@@ -231,10 +236,10 @@ if __name__ == '__main__':
             lr.fit(X_train, y_train)
             clf = svm.SVR(C=C)
             clf.fit(X_train, y_train)
-            nn = MLPRegressor(hidden_layer_sizes=(50, 50, 10, 10), solver='lbfgs', alpha=1e-6, max_iter=10000000)
+            nn = MLPRegressor(hidden_layer_sizes=(10, 10, 10), solver='lbfgs', alpha=1e-6, max_iter=10000000)
             nn.fit(X_train, y_train)
 
-            pred = clf.predict(X_test)
+            pred = rf.predict(X_test)
             mean_y_train = y_train.mean()
 
             # print(sum(y_train) / len(y_train))
@@ -248,6 +253,7 @@ if __name__ == '__main__':
 
         print('Average mse for model:', sum(mse_model) / num_trials)
         print('Average mse for baseline:', sum(mse_baseline) / num_trials)
+        print('Percent improvement:', 100 * (1.0 - sum(mse_model) / sum(mse_baseline)))
 
 
     else:
