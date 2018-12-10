@@ -21,9 +21,14 @@ ALL_BIOTYPES = ['rumination', 'anxious_avoid', 'negative_bias', 'con_threat_dysr
 # execution starts here
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train a model.')
-    parser.add_argument('--model', type=str, help='type of model to train/evaluate', required=True)
-    parser.add_argument('--n_clusters', type=int, help='number of clusters for k-means')
+    parser.add_argument('--model', type=str, help='Model to train & evaluate: \
+                        linreg, rf, svm, neural', required=True, \
+    parser.add_argument('--feat', type=str, help='Features to include when training.  \
+                        Available features: biotype, webneuro, medication, all', default = 'all')
+    parser.add_argument('--param_search', typ=bool, help='Use GridSearchCV to test range of hyperparameters. \
+                        May take a good chunk of time.  Options are y/n', default = False)
     parser.add_argument('--plot', type=bool)
+    parser.add_argument('--n_clusters', type=int, help='number of clusters for k-means')
     # options for prediction task:
         # Linear Regression Tasks
             # (i) 'biotype' --> fits model to predict biotype scores from fMRI
