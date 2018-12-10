@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from data_parser import *
 from sklearn import datasets, linear_model, svm
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, binarize
-from sklearn.feature_selection import SelectKBest, f_regression
+from sklearn.feature_selection import SelectKBest, f_regression, mutual_info_regression
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.model_selection import cross_val_score, train_test_split
 from sklearn.metrics import mean_squared_error, accuracy_score
@@ -223,7 +223,8 @@ if __name__ == '__main__':
         y = np.asarray((y - y.min()) / (y.max() - y.min())).astype('float')
 
         # select features
-        X = SelectKBest(f_regression, k=3).fit_transform(X, y)
+        #X = SelectKBest(f_regression, k=3).fit_transform(X, y)
+        X = SelectKBest(mutual_info_regression, k=17).fit_transform(X, y)
 
         classify = False
         if classify:
@@ -234,11 +235,11 @@ if __name__ == '__main__':
 
         mse_model, mse_baseline = [], []
         model_acc, baseline_acc = [], []
-        num_trials = 1
+        num_trials = 5
         for i in range(num_trials):
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=i)
 
-            C = 0.7 if features == 'webneuro' else 0.2
+            C = 0.7 if features == 'webneuro' else 0.7
 
             if not classify:
                 
@@ -246,14 +247,12 @@ if __name__ == '__main__':
                 rf.fit(X_train, y_train)
                 lr = linear_model.LinearRegression()
                 lr.fit(X_train, y_train)
-                clf = svm.SVR(C=C)
+                clf = svm.SVR(kernel = 'rbf', C=C, gamma = 'auto')
                 clf.fit(X_train, y_train)
                 nn = MLPRegressor(hidden_layer_sizes=(10, 10, 10), solver='lbfgs', alpha=1e-6, max_iter=10000000)
                 nn.fit(X_train, y_train)
-                
-                #clf = svm.SVR(kernel = 'rbf', C=2.5)
-                #clf.fit(X_train, y_train)
-                pred = rf.predict(X_test)
+                pred = clf.predict(X_test)
+
                 mean_y_train = y_train.mean()
                 mse_model.append(mean_squared_error(y_test, pred))
                 mse_baseline.append(mean_squared_error(y_test, [mean_y_train] * len(y_test)))
