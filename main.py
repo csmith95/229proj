@@ -225,7 +225,7 @@ if __name__ == '__main__':
         # select features
         X = SelectKBest(f_regression, k=3).fit_transform(X, y)
 
-        classify = True
+        classify = False
         if classify:
             m = y.mean()
             y = [1.0 if elem > m else 0.0 for elem in y]
@@ -241,6 +241,7 @@ if __name__ == '__main__':
             C = 0.7 if features == 'webneuro' else 0.2
 
             if not classify:
+                
                 rf = RandomForestRegressor(random_state=1, n_estimators=1000, max_features=2, max_depth=2)
                 rf.fit(X_train, y_train)
                 lr = linear_model.LinearRegression()
@@ -249,7 +250,9 @@ if __name__ == '__main__':
                 clf.fit(X_train, y_train)
                 nn = MLPRegressor(hidden_layer_sizes=(10, 10, 10), solver='lbfgs', alpha=1e-6, max_iter=10000000)
                 nn.fit(X_train, y_train)
-
+                
+                #clf = svm.SVR(kernel = 'rbf', C=2.5)
+                #clf.fit(X_train, y_train)
                 pred = rf.predict(X_test)
                 mean_y_train = y_train.mean()
                 mse_model.append(mean_squared_error(y_test, pred))
@@ -279,9 +282,11 @@ if __name__ == '__main__':
             print('Average classifcation accuracy for baseline:', np.mean(baseline_acc))
             rf = RandomForestClassifier(random_state=1, n_estimators=1000, max_features=2, max_depth=2)
             dummy = DummyClassifier(strategy='most_frequent', random_state=0)
-            print('Average cross validation score:', np.mean(cross_val_score(rf, X, y, cv=5)))
-            print('Average baseline cross validation score:', np.mean(cross_val_score(dummy, X, y, cv=5)))
-
+            avg_cross_val_score = np.mean(cross_val_score(rf, X, y, cv=5))
+            avg_baseline_cross_val_score = np.mean(cross_val_score(dummy, X, y, cv=5))
+            print('Average cross validation score:', avg_cross_val_score)
+            print('Average baseline cross validation score:', avg_baseline_cross_val_score)
+            print('Percent Improvement:', 100 * (avg_cross_val_score / avg_baseline_cross_val_score - 1))
 
     else:
         print('Plz provide a model arg')
