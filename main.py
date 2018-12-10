@@ -1,17 +1,19 @@
 import matplotlib.pyplot as plt
 from data_parser import *
 from sklearn import datasets, linear_model, svm
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.preprocessing import StandardScaler, MinMaxScaler, binarize
 from sklearn.feature_selection import SelectKBest, f_regression
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.model_selection import cross_val_score, train_test_split
 from sklearn.metrics import mean_squared_error, accuracy_score
+from sklearn.dummy import DummyClassifier
 import argparse
 from sklearn.cluster import KMeans
 from tabulate import tabulate
 import hypertools as hype
 import pandas as pd
 from sklearn.neural_network import MLPRegressor
+from scipy.stats import mode
 
 ALL_BIOTYPES = ['rumination', 'anxious_avoid', 'negative_bias', 'con_threat_dysreg', \
                     'noncon_threat_dysreg', 'anhedonia', 'cog_dyscontrol', 'inattention']
@@ -161,7 +163,7 @@ if __name__ == '__main__':
         df = dataParser.data_frame
         df = df.dropna()
         depression_score_df = pd.read_csv('./data/depression_scores.csv')
-        features = 'biotype'
+        features = 'all'
 
         if features == 'biotype':
             #Biotype
@@ -200,7 +202,7 @@ if __name__ == '__main__':
             webneuro = webneuro.merge(mapping, 'inner', on='login').merge(depression_score_df, 'inner',
                                                           on='subNum').dropna().drop('suffix', axis=1)
             webneuro['Gender'] = (webneuro['Gender'] == 'FEMALE').astype('int')
-            webneuro =webneuro.groupby(['subNum'], as_index=False).mean().drop('suffix', axis=1)
+            webneuro = webneuro.groupby(['subNum'], as_index=False).mean()
 
             medication = pd.read_csv('./data/Medication/Medication_Data_share.csv').drop('24_month_arm_1',
                                                                                          axis=1).dropna()
@@ -213,47 +215,72 @@ if __name__ == '__main__':
             y = all['depression_score']
 
 
-
+        #show selected features
+        print([f for f, i in zip(X.columns.values, SelectKBest(f_regression, k=3).fit(X,y).get_support()) if i])
 
         #normalize
         X = MinMaxScaler().fit_transform(X)
         y = np.asarray((y - y.min()) / (y.max() - y.min())).astype('float')
 
         # select features
+        X = SelectKBest(f_regression, k=3).fit_transform(X, y)
 
-        X = SelectKBest(f_regression, k=20).fit_transform(X, y)
+        classify = True
+        if classify:
+            m = y.mean()
+            y = [1.0 if elem > m else 0.0 for elem in y]
+
+
 
         mse_model, mse_baseline = [], []
-        num_trials = 10
+        model_acc, baseline_acc = [], []
+        num_trials = 1
         for i in range(num_trials):
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=i)
 
             C = 0.7 if features == 'webneuro' else 0.2
 
-            rf = RandomForestRegressor(random_state=1, n_estimators=1000, max_features=2, max_depth=2)
-            rf.fit(X_train, y_train)
-            lr = linear_model.LinearRegression()
-            lr.fit(X_train, y_train)
-            clf = svm.SVR(C=C)
-            clf.fit(X_train, y_train)
-            nn = MLPRegressor(hidden_layer_sizes=(10, 10, 10), solver='lbfgs', alpha=1e-6, max_iter=10000000)
-            nn.fit(X_train, y_train)
+            if not classify:
+                rf = RandomForestRegressor(random_state=1, n_estimators=1000, max_features=2, max_depth=2)
+                rf.fit(X_train, y_train)
+                lr = linear_model.LinearRegression()
+                lr.fit(X_train, y_train)
+                clf = svm.SVR(C=C)
+                clf.fit(X_train, y_train)
+                nn = MLPRegressor(hidden_layer_sizes=(10, 10, 10), solver='lbfgs', alpha=1e-6, max_iter=10000000)
+                nn.fit(X_train, y_train)
 
-            pred = rf.predict(X_test)
-            mean_y_train = y_train.mean()
+                pred = rf.predict(X_test)
+                mean_y_train = y_train.mean()
+                mse_model.append(mean_squared_error(y_test, pred))
+                mse_baseline.append(mean_squared_error(y_test, [mean_y_train] * len(y_test)))
+            else:
+                rf_clf = RandomForestClassifier(random_state=1, n_estimators=1000, max_features=2, max_depth=2)
+                rf_clf.fit(X_train, y_train)
+
+                pred = rf_clf.predict(X_test)
+                model_acc.append(accuracy_score(y_test, pred))
+                baseline_acc.append(accuracy_score(y_test, [mode(y_train)[0] for elem in range(len(y_test))]))
+
 
             # print(sum(y_train) / len(y_train))
             # print(sum(y_test) / len(y_test))
 
-            #print(accuracy_score(y_test, pred))
-            mse_model.append(mean_squared_error(y_test, pred))
-            mse_baseline.append(mean_squared_error(y_test, [mean_y_train] * len(y_test)))
+            #print()
+
             # model = linear_model.LinearRegression()
             # model.fit(X, y_train)
-
-        print('Average mse for model:', sum(mse_model) / num_trials)
-        print('Average mse for baseline:', sum(mse_baseline) / num_trials)
-        print('Percent improvement:', 100 * (1.0 - sum(mse_model) / sum(mse_baseline)))
+        if not classify:
+            print('Average mse for model:', sum(mse_model) / num_trials)
+            print('Average mse for baseline:', sum(mse_baseline) / num_trials)
+            print('Percent improvement:', 100 * (1.0 - sum(mse_model) / sum(mse_baseline)))
+        else:
+            print('Average classifcation accuracy for model:', np.mean(model_acc))
+            print('Average classifcation accuracy for baseline:', np.mean(baseline_acc))
+            rf = RandomForestClassifier(random_state=1, n_estimators=1000, max_features=2, max_depth=2)
+            dummy = DummyClassifier(strategy='most_frequent', random_state=0)
+            print('Average cross validation score:', np.mean(cross_val_score(rf, X, y, cv=5)))
+            print('Average baseline cross validation score:', np.mean(cross_val_score(dummy, X, y, cv=5)))
 
 
     else:
