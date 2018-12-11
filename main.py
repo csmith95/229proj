@@ -16,16 +16,16 @@ from sklearn.neural_network import MLPRegressor
 from scipy.stats import mode
 
 ALL_BIOTYPES = ['rumination', 'anxious_avoid', 'negative_bias', 'con_threat_dysreg', \
-                    'noncon_threat_dysreg', 'anhedonia', 'cog_dyscontrol', 'inattention']
+                'noncon_threat_dysreg', 'anhedonia', 'cog_dyscontrol', 'inattention']
 
 # execution starts here
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train a model.')
     parser.add_argument('--model', type=str, help='Model to train & evaluate: \
-                        linreg, rf, svm, neural', required=True, \
-    parser.add_argument('--feat', type=str, help='Features to include when training.  \
+                        linreg, rf, svm, neural', required=True)
+    parser.add_argument('--features', type=str, help='Features to include when training.  \
                         Available features: biotype, webneuro, medication, all', default = 'all')
-    parser.add_argument('--param_search', typ=bool, help='Use GridSearchCV to test range of hyperparameters. \
+    parser.add_argument('--param_search', type=bool, help='Use GridSearchCV to test range of hyperparameters.  \
                         May take a good chunk of time.  Options are y/n', default = False)
     parser.add_argument('--plot', type=bool)
     parser.add_argument('--n_clusters', type=int, help='number of clusters for k-means')
@@ -52,7 +52,60 @@ if __name__ == '__main__':
                                                             default=False)
 
     args = parser.parse_args()
-    print()
+    dataParser = DataParser(input_files=['./data/Neuroimaging/Reduced_biotype_imaging_data_s1.csv'])
+    df = dataParser.data_frame
+    df = df.dropna()
+    depression_score_df = pd.read_csv('./data/depression_scores.csv')
+    features = 'all'
+    if args.features == 'biotype':
+        #Biotype
+        merged = df.merge(depression_score_df, 'inner', on='subNum')
+        mean_score = merged['depression_score'].mean()
+        y_labels = [1 if x > mean_score else 0 for x in merged['depression_score']]
+        y = merged['depression_score']
+        #X = merged.loc[:, [b + '_type_score' for b in ALL_BIOTYPES]]
+        X = merged.loc[:, [c for c in merged.columns.values if c[:2] in ['Ac', 'PP', 'RS']]]
+    elif args.features == 'webneuro':
+        # Webmneuro
+        wanted_vars = list(pd.read_excel('./data/Webneuro/WebNeuro Data Dictionary.xlsx').VariableLabel)
+        webneuro = pd.read_csv('./data/Webneuro/WebNeuro_Data_2018-10-21_21-54-37.csv')
+        mapping = pd.read_csv('./data/Webneuro/subNum_login_mapping.csv')
+        mapping = mapping.dropna()
+        webneuro = webneuro.merge(mapping, 'inner', on='login').merge(depression_score_df, 'inner', on='subNum').dropna()
+        webneuro['Gender'] = (webneuro['Gender'] == 'FEMALE').astype('int')
+        webneuro = webneuro.groupby(['subNum']).mean().drop('suffix', axis=1)
+        X = webneuro.drop('depression_score', axis=1)
+        y = webneuro['depression_score']
+    if args.features == 'medication':
+        medication = pd.read_csv('./data/Medication/Medication_Data_share.csv').drop('24_month_arm_1', axis=1).dropna()
+        #filter out medications ended before start of ENGAGE
+        medication = medication[medication.END_DATE_Ndays_ENGAGE <= 0][['subNum', 'description']]
+        medication['description'] = medication['description'].apply(lambda s: s.split(' ')[0])
+        med_dummies = pd.get_dummies(medication, columns=['description']).groupby(['subNum'], as_index=False).sum()
+        med_dummies = med_dummies.merge(depression_score_df, 'inner', on='subNum').drop('subNum', axis=1)
+        y = med_dummies['depression_score']
+        X = med_dummies.drop('depression_score', axis=1).clip(upper=1)
+        print('Successfully obtained medication information.')
+    if args.features == 'all':
+        wanted_vars = list(pd.read_excel('./data/Webneuro/WebNeuro Data Dictionary.xlsx').VariableLabel)
+        webneuro = pd.read_csv('./data/Webneuro/WebNeuro_Data_2018-10-21_21-54-37.csv')
+        mapping = pd.read_csv('./data/Webneuro/subNum_login_mapping.csv')
+        mapping = mapping.dropna()
+        webneuro = webneuro.merge(mapping, 'inner', on='login').merge(depression_score_df, 'inner',
+                                                        on='subNum').dropna().drop('suffix', axis=1)
+        webneuro['Gender'] = (webneuro['Gender'] == 'FEMALE').astype('int')
+        webneuro = webneuro.groupby(['subNum'], as_index=False).mean()
+
+        medication = pd.read_csv('./data/Medication/Medication_Data_share.csv').drop('24_month_arm_1',
+                                                                                     axis=1).dropna()
+        # filter out medications ended before start of ENGAGE
+        medication = medication[medication.END_DATE_Ndays_ENGAGE <= 0][['subNum', 'description']]
+        medication['description'] = medication['description'].apply(lambda s: s.split(' ')[0])
+        med_dummies = pd.get_dummies(medication, columns=['description']).groupby(['subNum'], as_index=False).sum()
+        all = med_dummies.merge(webneuro, 'inner', on='subNum')
+        X = all.drop(['subNum', 'depression_score'], axis=1)
+        y = all['depression_score']
+
     if args.model == 'linreg':
         print('Training a Linear Regression Model...')
         if args.task == 'biotype':
@@ -164,60 +217,9 @@ if __name__ == '__main__':
         else:
             print("Provide a task for neural net. See options in main.py")
     elif args.model == 'rf':
-        dataParser = DataParser(input_files=['./data/Neuroimaging/Reduced_biotype_imaging_data_s1.csv'])
-        df = dataParser.data_frame
-        df = df.dropna()
-        depression_score_df = pd.read_csv('./data/depression_scores.csv')
-        features = 'all'
 
-        if features == 'biotype':
-            #Biotype
-            merged = df.merge(depression_score_df, 'inner', on='subNum')
-            mean_score = merged['depression_score'].mean()
-            y_labels = [1 if x > mean_score else 0 for x in merged['depression_score']]
-            y = merged['depression_score']
-            #X = merged.loc[:, [b + '_type_score' for b in ALL_BIOTYPES]]
-            X = merged.loc[:, [c for c in merged.columns.values if c[:2] in ['Ac', 'PP', 'RS']]]
-        elif features == 'webneuro':
-            # Webmneuro
-            wanted_vars = list(pd.read_excel('./data/Webneuro/WebNeuro Data Dictionary.xlsx').VariableLabel)
-            webneuro = pd.read_csv('./data/Webneuro/WebNeuro_Data_2018-10-21_21-54-37.csv')
-            mapping = pd.read_csv('./data/Webneuro/subNum_login_mapping.csv')
-            mapping = mapping.dropna()
-            webneuro = webneuro.merge(mapping, 'inner', on='login').merge(depression_score_df, 'inner', on='subNum').dropna()
-            webneuro['Gender'] = (webneuro['Gender'] == 'FEMALE').astype('int')
-            webneuro = webneuro.groupby(['subNum']).mean().drop('suffix', axis=1)
-            X = webneuro.drop('depression_score', axis=1)
-            y = webneuro['depression_score']
-        if features == 'medication':
-            medication = pd.read_csv('./data/Medication/Medication_Data_share.csv').drop('24_month_arm_1', axis=1).dropna()
-            #filter out medications ended before start of ENGAGE
-            medication = medication[medication.END_DATE_Ndays_ENGAGE <= 0][['subNum', 'description']]
-            medication['description'] = medication['description'].apply(lambda s: s.split(' ')[0])
-            med_dummies = pd.get_dummies(medication, columns=['description']).groupby(['subNum'], as_index=False).sum()
-            med_dummies = med_dummies.merge(depression_score_df, 'inner', on='subNum').drop('subNum', axis=1)
-            y = med_dummies['depression_score']
-            X = med_dummies.drop('depression_score', axis=1).clip(upper=1)
-            print('Successfully obtained medication information.')
-        if features == 'all':
-            wanted_vars = list(pd.read_excel('./data/Webneuro/WebNeuro Data Dictionary.xlsx').VariableLabel)
-            webneuro = pd.read_csv('./data/Webneuro/WebNeuro_Data_2018-10-21_21-54-37.csv')
-            mapping = pd.read_csv('./data/Webneuro/subNum_login_mapping.csv')
-            mapping = mapping.dropna()
-            webneuro = webneuro.merge(mapping, 'inner', on='login').merge(depression_score_df, 'inner',
-                                                          on='subNum').dropna().drop('suffix', axis=1)
-            webneuro['Gender'] = (webneuro['Gender'] == 'FEMALE').astype('int')
-            webneuro = webneuro.groupby(['subNum'], as_index=False).mean()
 
-            medication = pd.read_csv('./data/Medication/Medication_Data_share.csv').drop('24_month_arm_1',
-                                                                                         axis=1).dropna()
-            # filter out medications ended before start of ENGAGE
-            medication = medication[medication.END_DATE_Ndays_ENGAGE <= 0][['subNum', 'description']]
-            medication['description'] = medication['description'].apply(lambda s: s.split(' ')[0])
-            med_dummies = pd.get_dummies(medication, columns=['description']).groupby(['subNum'], as_index=False).sum()
-            all = med_dummies.merge(webneuro, 'inner', on='subNum')
-            X = all.drop(['subNum', 'depression_score'], axis=1)
-            y = all['depression_score']
+
 
 
         #show selected features
