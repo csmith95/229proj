@@ -284,6 +284,8 @@ if __name__ == '__main__':
         # select features
         X = SelectKBest(f_regression, k=3).fit_transform(X, y)
 
+        print('X shape:', X.shape)
+
         classify = False
         if classify:
             m = y.mean()
@@ -291,9 +293,9 @@ if __name__ == '__main__':
 
         mse_model, mse_baseline = [], []
         model_acc, baseline_acc = [], []
-        num_trials = 5
+        num_trials = 1
         for i in range(num_trials):
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=i)
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=i+1)
             if not classify:
                 
                 rf = RandomForestRegressor(random_state=1, n_estimators=1000, max_features=2, max_depth=2)
@@ -328,8 +330,8 @@ if __name__ == '__main__':
             print('Average mse for baseline:', sum(mse_baseline) / num_trials)
             print('Percent improvement:', 100 * (1.0 - sum(mse_model) / sum(mse_baseline)))
         else:
-            print('Average classifcation accuracy for model:', np.mean(model_acc))
-            print('Average classifcation accuracy for baseline:', np.mean(baseline_acc))
+            print('Classifcation accuracy for model:', np.mean(model_acc))
+            print('Classifcation accuracy for baseline:', np.mean(baseline_acc))
             rf = RandomForestClassifier(random_state=1, n_estimators=1000, max_features=2, max_depth=2)
             dummy = DummyClassifier(strategy='most_frequent', random_state=0)
             avg_cross_val_score = np.mean(cross_val_score(rf, X, y, cv=5))
