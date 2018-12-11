@@ -4,7 +4,7 @@ from sklearn import datasets, linear_model, svm
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, binarize
 from sklearn.feature_selection import SelectKBest, f_regression, mutual_info_regression
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
-from sklearn.model_selection import cross_val_score, train_test_split
+from sklearn.model_selection import cross_val_score, train_test_split, GridSearchCV
 from sklearn.metrics import mean_squared_error, accuracy_score
 from sklearn.dummy import DummyClassifier
 import argparse
@@ -14,6 +14,9 @@ import hypertools as hype
 import pandas as pd
 from sklearn.neural_network import MLPRegressor
 from scipy.stats import mode
+import warnings
+import pdb
+
 
 ALL_BIOTYPES = ['rumination', 'anxious_avoid', 'negative_bias', 'con_threat_dysreg', \
                 'noncon_threat_dysreg', 'anhedonia', 'cog_dyscontrol', 'inattention']
@@ -50,13 +53,13 @@ if __name__ == '__main__':
                                                 nargs='+', default=' '.join(ALL_BIOTYPES))
     parser.add_argument('--show_coeffs', type=bool, help='show coefficients for linear reg', \
                                                             default=False)
+    parser.add_argument('--verbose', type=bool, help='Display extra warning/info', default=False)
 
     args = parser.parse_args()
-    dataParser = DataParser(input_files=['./data/Neuroimaging/Reduced_biotype_imaging_data_s1.csv'])
+    dataParser = DataParser(input_files=['./data/Neuroimaging/Reduced_biotype_imaging_data_s1.csv'], verbose = args.verbose)
     df = dataParser.data_frame
     df = df.dropna()
     depression_score_df = pd.read_csv('./data/depression_scores.csv')
-    features = 'all'
     if args.features == 'biotype':
         #Biotype
         merged = df.merge(depression_score_df, 'inner', on='subNum')
@@ -216,12 +219,47 @@ if __name__ == '__main__':
 
         else:
             print("Provide a task for neural net. See options in main.py")
+
+
+    elif args.model == 'svm':
+        pdb.set_trace()
+        X = MinMaxScaler().fit_transform(X)
+        y = np.asarray((y - y.min()) / (y.max() - y.min())).astype('float')
+        X = SelectKBest(mutual_info_regression, k=17).fit_transform(X, y)
+
+        #C = 0.7 if features == 'webneuro' else 0.7
+        mse_model, mse_baseline = [], []
+        tuned_params = []
+
+        num_trials = 5
+        for i in range(num_trials):
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=i)
+            
+            if args.param_search:
+                tuned_parameters = [{'kernel': ['rbf'], 'gamma': [1e-3, 1e-4], \
+                                    'C': [1, 10, 100, 1000]}]
+                                    #{'kernel': ['linear'], 'C': [1, 10, 100, 1000]}]
+                warnings.filterwarnings("ignore", category=DeprecationWarning)
+                clf = GridSearchCV(svm.SVR(), tuned_parameters, cv=5)
+                clf.fit(X_train, y_train)
+                pred = clf.predict(X_test)
+                mean_y_train = y_train.mean()
+                mse_model.append(mean_squared_error(y_test, pred))
+                mse_baseline.append(mean_squared_error(y_test, [mean_y_train] * len(y_test)))
+            else:
+                clf = svm.SVR(kernel = 'rbf', C=1.0, gamma = 'auto')
+                clf.fit(X_train, y_train)
+                pred = clf.predict(X_test)
+                mean_y_train = y_train.mean()
+                mse_model.append(mean_squared_error(y_test, pred))
+                mse_baseline.append(mean_squared_error(y_test, [mean_y_train] * len(y_test)))
+
+        print('Average mse for model:', sum(mse_model) / num_trials)
+        print('Average mse for baseline:', sum(mse_baseline) / num_trials)
+        print('Percent improvement:', 100 * (1.0 - sum(mse_model) / sum(mse_baseline)))
+
+
     elif args.model == 'rf':
-
-
-
-
-
         #show selected features
         print([f for f, i in zip(X.columns.values, SelectKBest(f_regression, k=3).fit(X,y).get_support()) if i])
 
@@ -230,35 +268,27 @@ if __name__ == '__main__':
         y = np.asarray((y - y.min()) / (y.max() - y.min())).astype('float')
 
         # select features
-        #X = SelectKBest(f_regression, k=3).fit_transform(X, y)
-        X = SelectKBest(mutual_info_regression, k=17).fit_transform(X, y)
+        X = SelectKBest(f_regression, k=3).fit_transform(X, y)
 
         classify = False
         if classify:
             m = y.mean()
             y = [1.0 if elem > m else 0.0 for elem in y]
 
-
-
         mse_model, mse_baseline = [], []
         model_acc, baseline_acc = [], []
         num_trials = 5
         for i in range(num_trials):
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=i)
-
-            C = 0.7 if features == 'webneuro' else 0.7
-
             if not classify:
                 
                 rf = RandomForestRegressor(random_state=1, n_estimators=1000, max_features=2, max_depth=2)
                 rf.fit(X_train, y_train)
                 lr = linear_model.LinearRegression()
                 lr.fit(X_train, y_train)
-                clf = svm.SVR(kernel = 'rbf', C=C, gamma = 'auto')
-                clf.fit(X_train, y_train)
                 nn = MLPRegressor(hidden_layer_sizes=(10, 10, 10), solver='lbfgs', alpha=1e-6, max_iter=10000000)
                 nn.fit(X_train, y_train)
-                pred = clf.predict(X_test)
+                pred = rf.predict(X_test)
 
                 mean_y_train = y_train.mean()
                 mse_model.append(mean_squared_error(y_test, pred))

@@ -11,16 +11,21 @@ from sklearn.model_selection import train_test_split
 	# see filter_variables
 # (3) output csv files to files so that you can 
 # create a folder with various variable combinations
+
+# If not verbose, print statements indicating successful operations are suppressed.
+# Print statements for failed operations are never suppressed, regardless of verbosity
 class DataParser():
 
 	# input_paths should be a list of paths to csv files
-	def __init__(self, input_files, joinOn=['subNum']):
+	def __init__(self, input_files, joinOn=['subNum'], verbose = False):
 		temp_data_frames = []
 		for input_file in input_files:
 			try:
-				print('Loading data from file: "{}"'.format(input_file))
+				if verbose:
+					print('Loading data from file: "{}"'.format(input_file))
 				temp_data_frames.append(pd.read_csv(input_file))
-				print('\t Done loading data for this file!\n')
+				if verbose:
+					print('\t Done loading data for this file!\n')
 			except ValueError as e:
 				print('ValueError when trying to load data from file: "{}"'.format(input_file))
 				print('Error message:', e)
@@ -37,11 +42,13 @@ class DataParser():
 		for keys, frame in zip(joinOn, temp_data_frames[1:]):
 			self.data_frame = pd.merge(self.data_frame, frame, on=keys)
 
-		print('Successfully joined dataframes by the following keys:', joinOn)
+		if verbose:
+			print('Successfully joined dataframes by the following keys:', joinOn)
 
 	def filter_data(self, key, value):
 		self.data_frame = self.data_frame.loc[self.data_frame[key] == value]
-		print('Filtered data using key {} == {}'.format(key, value))
+		if verbose:
+			print('Filtered data using key {} == {}'.format(key, value))
 
 	def get_data_splits(self, train_vars, label_var=None, train_split=0.7, print_input_vars=True):
 		# make sure no overlap in vars
@@ -77,9 +84,10 @@ class DataParser():
 				print('\t ({}) {}'.format(i+1, var))
 		m_labels, _ = labels_matrix.shape
 
-		print('\nOriginal # of rows in train matrix: {}'.format(m_train))
-		print('Original # of rows in labels matrix: {}'.format(m_labels))
-		print('Getting rid of invalid entries (like NaN)...')
+		if verbose:
+			print('\nOriginal # of rows in train matrix: {}'.format(m_train))
+			print('Original # of rows in labels matrix: {}'.format(m_labels))
+			print('Getting rid of invalid entries (like NaN)...')
 		# first drop if label is nan
 		valid_label_indices = ~np.isnan(labels_matrix).reshape((m_labels,))
 		train_matrix = train_matrix[valid_label_indices,:]
@@ -90,8 +98,9 @@ class DataParser():
 		labels_matrix = labels_matrix[valid_input_indices]
 		m_train, n = train_matrix.shape
 		m_labels, _ = labels_matrix.shape
-		print('Cleaned # of rows in train matrix: {}'.format(m_train))
-		print('Cleaned # of rows in labels matrix: {}\n'.format( m_labels))
+		if verbose:
+			print('Cleaned # of rows in train matrix: {}'.format(m_train))
+			print('Cleaned # of rows in labels matrix: {}\n'.format( m_labels))
 		# Lastly, return train and test splits and the input var list
 		X_train, X_test, y_train, y_test = train_test_split(train_matrix, labels_matrix, train_size=train_split)
 		return (X_train, X_test, y_train, y_test, input_variables)
