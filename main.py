@@ -14,6 +14,7 @@ import hypertools as hype
 import pandas as pd
 from sklearn.neural_network import MLPRegressor
 from scipy.stats import mode
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 import warnings
 import pdb
 
@@ -222,7 +223,6 @@ if __name__ == '__main__':
 
 
     elif args.model == 'svm':
-        pdb.set_trace()
         X = MinMaxScaler().fit_transform(X)
         y = np.asarray((y - y.min()) / (y.max() - y.min())).astype('float')
         X = SelectKBest(mutual_info_regression, k=17).fit_transform(X, y)
@@ -231,21 +231,35 @@ if __name__ == '__main__':
         mse_model, mse_baseline = [], []
         tuned_params = []
 
-        num_trials = 5
+        num_trials = 1
         for i in range(num_trials):
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=i)
             
             if args.param_search:
                 tuned_parameters = [{'kernel': ['rbf'], 'gamma': [1e-3, 1e-4], \
-                                    'C': [1, 10, 100, 1000]}]
+                                    'C': [.1,.2]}] #.5,1,2,5,10,50,100,200,1000
                                     #{'kernel': ['linear'], 'C': [1, 10, 100, 1000]}]
                 warnings.filterwarnings("ignore", category=DeprecationWarning)
-                clf = GridSearchCV(svm.SVR(), tuned_parameters, cv=5)
+                clf = GridSearchCV(svm.SVR(), tuned_parameters, cv=5, n_jobs = -1) #use all processors
+                
                 clf.fit(X_train, y_train)
                 pred = clf.predict(X_test)
                 mean_y_train = y_train.mean()
                 mse_model.append(mean_squared_error(y_test, pred))
                 mse_baseline.append(mean_squared_error(y_test, [mean_y_train] * len(y_test)))
+                #pdb.set_trace()
+
+                ax = plt.subplot(111)
+                a = np.array(([1,2],[3,4]))
+                im = ax.imshow(np.flip(a,axis=0))
+                # create an axes on the right side of ax. The width of cax will be 5%
+                # of ax and the padding between cax and ax will be fixed at 0.05 inch.
+                divider = make_axes_locatable(ax)
+                cax = divider.append_axes("right", size="5%", pad=0.05)
+                plt.colorbar(im, cax=cax)
+                plt.ylim((3,7))
+                plt.xlim((1,3))
+                plt.show()
             else:
                 clf = svm.SVR(kernel = 'rbf', C=1.0, gamma = 'auto')
                 clf.fit(X_train, y_train)
