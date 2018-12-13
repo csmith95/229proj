@@ -17,7 +17,7 @@ from sklearn.model_selection import train_test_split
 class DataParser():
 
 	# input_paths should be a list of paths to csv files
-	def __init__(self, input_files, joinOn=['subNum'], verbose = False):
+	def __init__(self, input_files, joinOn=['subNum'], verbose= False):
 		temp_data_frames = []
 		for input_file in input_files:
 			try:
@@ -45,12 +45,12 @@ class DataParser():
 		if verbose:
 			print('Successfully joined dataframes by the following keys:', joinOn)
 
-	def filter_data(self, key, value):
+	def filter_data(self, key, value, verbose=False):
 		self.data_frame = self.data_frame.loc[self.data_frame[key] == value]
 		if verbose:
 			print('Filtered data using key {} == {}'.format(key, value))
 
-	def get_data_splits(self, train_vars, label_var=None, train_split=0.7, print_input_vars=True):
+	def get_data_splits(self, train_vars, label_var=None, train_split=0.7, print_input_vars=True, verbose=True):
 		# make sure no overlap in vars
 		if label_var in train_vars:
 			raise ValueError('Label variable {} found in train vars'.format(label_var))

@@ -7,6 +7,7 @@ from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.model_selection import cross_val_score, train_test_split, GridSearchCV
 from sklearn.metrics import mean_squared_error, accuracy_score
 from sklearn.dummy import DummyClassifier
+import sklearn
 import argparse
 from sklearn.cluster import KMeans
 from tabulate import tabulate
@@ -17,6 +18,8 @@ from scipy.stats import mode
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import warnings
 import pdb
+from mpl_toolkits.mplot3d import Axes3D
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 
 ALL_BIOTYPES = ['rumination', 'anxious_avoid', 'negative_bias', 'con_threat_dysreg', \
@@ -24,39 +27,105 @@ ALL_BIOTYPES = ['rumination', 'anxious_avoid', 'negative_bias', 'con_threat_dysr
 
 # execution starts here
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Train a model.')
-    parser.add_argument('--model', type=str, help='Model to train & evaluate: \
-                        linreg, rf, svm, neural', required=True)
-    parser.add_argument('--features', type=str, help='Features to include when training.  \
-                        Available features: biotype, webneuro, medication, all', default = 'all')
-    parser.add_argument('--param_search', type=bool, help='Use GridSearchCV to test range of hyperparameters.  \
-                        May take a good chunk of time.  Options are y/n', default = False)
-    parser.add_argument('--plot', type=bool)
-    parser.add_argument('--n_clusters', type=int, help='number of clusters for k-means')
-    # options for prediction task:
-        # Linear Regression Tasks
-            # (i) 'biotype' --> fits model to predict biotype scores from fMRI
-            # (ii) 'emotion' --> fits model to predict average emotional recognition accuracy using fMRI
-                # in progess (Conner)
-            # (iii) depression -> fits model to predict score on depression indicators scl
-                # TODO (haven't started)
-        # Clustering Tasks
-            # None (just breaks data into n_clusters)
-            # TODO: interpret these results?
-        # Neural Net Tasks
-            # TODO
-            # We can try to re-do the linear regression tasks using a neural net.
-            # Also, This will probably be our best shot for analyzing the data over time.
-            # We can use an LSTM to capture some patterns.
-    parser.add_argument('--task', type=str, help='prediction task')
-    parser.add_argument('--biotypes', type=str, help='reduced biotypes to consider as labels \
-                                                    when fitting linear regression',
-                                                nargs='+', default=' '.join(ALL_BIOTYPES))
-    parser.add_argument('--show_coeffs', type=bool, help='show coefficients for linear reg', \
-                                                            default=False)
-    parser.add_argument('--verbose', type=bool, help='Display extra warning/info', default=False)
+    # parser = argparse.ArgumentParser(description='Train a model.')
+    # parser.add_argument('--model', type=str, help='Model to train & evaluate: \
+    #                     linreg, rf, svm, neural', required=True)
+    # parser.add_argument('--features', type=str, help='Features to include when training.  \
+    #                     Available features: biotype, webneuro, medication, all', default = 'all')
+    # parser.add_argument('--param_search', type=bool, help='Use GridSearchCV to test range of hyperparameters.  \
+    #                     May take a good chunk of time.  Options are y/n', default = False)
+    # parser.add_argument('--plot', type=bool)
+    # parser.add_argument('--n_clusters', type=int, help='number of clusters for k-means')
+    # # options for prediction task:
+    #     # Linear Regression Tasks
+    #         # (i) 'biotype' --> fits model to predict biotype scores from fMRI
+    #         # (ii) 'emotion' --> fits model to predict average emotional recognition accuracy using fMRI
+    #             # in progess (Conner)
+    #         # (iii) depression -> fits model to predict score on depression indicators scl
+    #             # TODO (haven't started)
+    #     # Clustering Tasks
+    #         # None (just breaks data into n_clusters)
+    #         # TODO: interpret these results?
+    #     # Neural Net Tasks
+    #         # TODO
+    #         # We can try to re-do the linear regression tasks using a neural net.
+    #         # Also, This will probably be our best shot for analyzing the data over time.
+    #         # We can use an LSTM to capture some patterns.
+    # parser.add_argument('--task', type=str, help='prediction task')
+    # parser.add_argument('--biotypes', type=str, help='reduced biotypes to consider as labels \
+    #                                                 when fitting linear regression',
+    #                                             nargs='+', default=' '.join(ALL_BIOTYPES))
+    # parser.add_argument('--show_coeffs', type=bool, help='show coefficients for linear reg', \
+    #                                                         default=False)
+    # parser.add_argument('--verbose', type=bool, help='Display extra warning/info', default=False)
+    # args = parser.parse_args()
 
-    args = parser.parse_args()
+    # dataParser = DataParser(input_files=['./data/Neuroimaging/Reduced_biotype_imaging_data_s1.csv'])
+    # X, X_test, y_train, y_test, input_variables = dataParser.get_data_splits(train_vars=['Act', 'PPI'], \
+         
+
+
+
+
+# **************** this lost code is for LDA/PCA and is looking for a home in this project ***********
+
+    # label_var='rumination_type_score', train_split=0.9)
+    # dataParser = DataParser(input_files=['./data/Neuroimaging/Reduced_biotype_imaging_data_s1.csv'])
+    # df = dataParser.data_frame
+    # df = df.dropna()
+    # depression_score_df = pd.read_csv('./data/depression_scores.csv')
+    # merged = df.merge(depression_score_df, 'inner', on='subNum')
+    # # y = pd.read_csv('./data/depression_scores.csv').values[:,1]
+    # d_scores = merged['depression_score'].values
+    # X = merged.drop(['depression_score', 'subNum'], axis=1).values
+    # print(d_scores)
+    # raise ValueError
+    # scores = np.percentile(d_scores, [33, 66])
+    # print(scores)
+    # y = np.ones(d_scores.shape)
+    # for i in range(d_scores.shape[0]):   
+    #     if d_scores[i] <= scores[0]:
+    #         y[i] = 0
+    #     if d_scores[i] >= scores[1]:
+    #         y[i] = 2 
+
+    # pca = sklearn.decomposition.PCA(n_components=2)
+    # X = pca.fit(X).transform(X)
+    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30)
+
+    # lda = LinearDiscriminantAnalysis(n_components=2)
+    # X_train = lda.fit(X_train, y_train).transform(X_train)
+    # plt.figure()
+    # lw = 2
+    # target_names = ['Bottom Tercile', 'Middle Tercile', 'Top Tercile']
+    # colors = ['navy', 'turquoise', 'darkorange']
+    # for color, i, target_name in zip(colors, [0, 1, 2], target_names):
+        # if i == 0:
+        #     x = X[y <= scores[0], 0]
+        #     y_r = X[y <= scores[0], 1]
+        # if i == 1:
+        #     indices = [a and b for a, b in zip(y >= scores[0], y <= scores[1])]
+        #     x = X[indices, 0]
+        #     y_r = X[indices, 1]
+        # if i == 2:
+        #     x = X[y >= scores[1], 0]
+        #     y_r = X[y >= scores[1], 1]
+        # plt.scatter(X[y==i,0], X[y==i,1], color=color, alpha=.8, lw=lw, label=target_name)
+
+    # plt.scatter(X[:,0], X[:,1])
+    # plt.legend(loc='best', shadow=False, scatterpoints=1)
+    # plt.title('LDA of fMRI Data')
+    # plt.show()
+    # print(X_test.shape)
+    # Z = lda.transform(X_test) #using the model to project Z
+    # print()
+    # print(Z)
+    # z_labels = lda.predict(X_test) #gives you the predicted label for each sample
+    # print(z_labels)
+    # print('accuracy: ', np.sum(z_labels == y_test) / float(z_labels.shape[0]))
+
+
+
     dataParser = DataParser(input_files=['./data/Neuroimaging/Reduced_biotype_imaging_data_s1.csv'], verbose = args.verbose)
     df = dataParser.data_frame
     df = df.dropna()
@@ -217,7 +286,6 @@ if __name__ == '__main__':
             mean_acc = np.mean(y_train)
             mean_pred = mean_acc * np.ones_like(y_test)
             print('"Guessing" mean squared error: %.2f\n' % mean_squared_error(y_test, mean_pred))
-
         else:
             print("Provide a task for neural net. See options in main.py")
 
